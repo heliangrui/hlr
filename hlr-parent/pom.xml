@@ -31,6 +31,7 @@
         <commons.lang3.version>3.10</commons.lang3.version>
         <itextpdf.version>5.5.13</itextpdf.version>
         <commons.fileupload.version>1.3.3</commons.fileupload.version>
+        <slf4j.version>1.7.21</slf4j.version>
     </properties>
     <dependencies>
         <!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-parent -->
@@ -40,11 +41,29 @@
             <version>2.7.15</version>
             <type>pom</type>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
 
     </dependencies>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
             <dependency>
                 <groupId>hlr.start</groupId>
                 <artifactId>hlr-start</artifactId>

@@ -2,6 +2,7 @@ package com.hlr.common.geom;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * GeomJson
@@ -55,8 +56,8 @@ public class GeomJson {
     public static String geoJsonToGeom(JSONObject geometry){
 
         // 数据格式错误
-        if(geometry == null || StringUtils.isBlank(geometry.getString(GEOM_TYPE)) || CollectionUtils.isEmpty(geometry.getJSONArray(GEOM_COORDINATES)) ){
-            throw CommonException.error("数据格式错误");
+        if(geometry == null || StringUtils.isBlank(geometry.getString(GEOM_TYPE)) || geometry.getJSONArray(GEOM_COORDINATES) != null || geometry.getJSONArray(GEOM_COORDINATES).isEmpty() ){
+            return null;
         }
         String type = geometry.getString(GEOM_TYPE);
         JSONArray coordinates = geometry.getJSONArray(GEOM_COORDINATES);

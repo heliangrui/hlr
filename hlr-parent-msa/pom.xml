@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>hlr.parent</groupId>
+        <artifactId>hlr-parent</artifactId>
+        <version>1.0.1-HLR</version>
+    </parent>
+    <groupId>com.hlr.parent.msa</groupId>
+    <artifactId>hlr-parent-msa</artifactId>
+    <version>1.0.1-HLR</version>
+    <packaging>pom</packaging>
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.hlr.common</groupId>
+            <artifactId>hlr-common</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>hlr.start</groupId>
+            <artifactId>hlr-start</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>

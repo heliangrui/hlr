@@ -1,4 +1,4 @@
-package com.hlr.common.utils;
+package com.hlr.common;
 
 import java.util.UUID;
 

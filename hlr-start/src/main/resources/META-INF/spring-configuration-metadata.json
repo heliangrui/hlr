@@ -1,0 +1,57 @@
+{
+  "groups":[
+    {
+      "name": "hlr.redis",
+      "type": "com.hlr.starter.config.RedisPoolConfigProperties",
+      "sourceType": "com.hlr.starter.config.RedisPoolConfigProperties"
+    },
+    {
+      "name": "hlr.redis.connection-timeout",
+      "type": "java.lang.Integer",
+      "description": "最大链接时间",
+      "sourceType": "com.fhd.starter.config.RedisPoolConfigProperties",
+      "defaultValue": 3000
+    },
+    {
+      "name": "hlr.redis.max-idle",
+      "type": "java.lang.Integer",
+      "description": "最小链接数",
+      "sourceType": "com.fhd.starter.config.RedisPoolConfigProperties",
+      "defaultValue": 1
+    },
+    {
+      "name": "hlr.redis.max-total",
+      "type": "java.lang.Integer",
+      "description": "最大链接数",
+      "sourceType": "com.fhd.starter.config.RedisPoolConfigProperties",
+      "defaultValue": 10
+    },
+    {
+      "name": "hlr.redis.max-wait-millis",
+      "type": "java.lang.Integer",
+      "description": "最大等待时间",
+      "sourceType": "com.fhd.starter.config.RedisPoolConfigProperties",
+      "defaultValue": 5000
+    },
+    {
+      "name": "hlr.redis.server",
+      "type": "java.lang.String",
+      "description": "redis地址",
+      "sourceType": "com.fhd.starter.config.RedisPoolConfigProperties"
+    },
+    {
+      "name": "hlr.redis.so-timeout",
+      "type": "java.lang.Integer",
+      "description": "最大传输时间",
+      "sourceType": "com.fhd.starter.config.RedisPoolConfigProperties",
+      "defaultValue": 3000
+    },
+    {
+      "name": "hlr.redis.port",
+      "type": "java.lang.Integer",
+      "description": "端口",
+      "sourceType": "com.fhd.starter.config.RedisPoolConfigProperties",
+      "defaultValue": 6379
+    }
+  ]
+}

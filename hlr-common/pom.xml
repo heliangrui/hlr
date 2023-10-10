@@ -5,8 +5,8 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.hlr.parent.msa</groupId>
-        <artifactId>hlr-parent-msa</artifactId>
+        <groupId>hlr.parent</groupId>
+        <artifactId>hlr-parent</artifactId>
         <version>1.0.1-HLR</version>
     </parent>
     <groupId>com.hlr.common</groupId>
@@ -14,22 +14,10 @@
     <version>1.0.1-HLR</version>
     
     <dependencies>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-
+        
         <dependency>
             <groupId>com.itextpdf</groupId>
             <artifactId>itextpdf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-fileupload</groupId>
-            <artifactId>commons-fileupload</artifactId>
         </dependency>
     </dependencies>
     <build>

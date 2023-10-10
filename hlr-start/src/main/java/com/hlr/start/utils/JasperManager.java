@@ -1,4 +1,4 @@
-package com.hlr.web;
+package com.hlr.start.utils;
 
 
 import com.hlr.common.exception.CustomException;
@@ -19,8 +19,6 @@ import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -196,118 +194,118 @@ public class JasperManager {
         }
     }
 
-    /**
-     * @param jasperPrint 模板文件
-     * @param fileName    文件名称
-     * @return multipartFile
-     */
-    public static MultipartFile jasperPrintExportPDFMultipartFile(JasperPrint jasperPrint, String fileName) throws CustomException {
-        byte[] bytes = jasperPrintExportPDF(jasperPrint);
-        return jasperPrintExportPDFMultipartFile(bytes, fileName);
-    }
-
-    /**
-     * @param jasperPrint 模板文件
-     * @param fileName    文件名称
-     * @return multipartFile
-     */
-    public static MultipartFile jasperPrintExportWORDMultipartFile(JasperPrint jasperPrint, String fileName) throws CustomException {
-        byte[] bytes = jasperPrintExportWORD(jasperPrint);
-        return jasperPrintExportWORDMultipartFile(bytes, fileName);
-    }
-
-    /**
-     * @param source   模板文件
-     * @param fileName 文件名称
-     * @return multipartFile
-     */
-    public static MultipartFile jasperPrintExportWORDMultipartFile(byte[] source, String fileName) throws CustomException {
-        FileItemFactory factory = new DiskFileItemFactory(16, null);
-        FileItem file = factory.createItem(fileName + ".docx", "application/msword", false, fileName + ".docx");
-        return createMultipartFile(source, file);
-    }
-
-    /**
-     * @param source   模板文件byte
-     * @param fileName 文件名称
-     * @return multipartFile
-     */
-    public static MultipartFile jasperPrintExportPDFMultipartFile(byte[] source, String fileName) throws CustomException {
-        FileItemFactory factory = new DiskFileItemFactory(16, null);
-        FileItem file = factory.createItem(fileName + ".pdf", "application/pdf", false, fileName + ".pdf");
-        return createMultipartFile(source, file);
-    }
-
-    /**
-     *
-     * @param jasperPrint 模板文件
-     * @param fileName 文件名称
-     * @return multipartFile
-     *
-     */
-    public static MultipartFile jasperPrintExportIMGMultipartFile(JasperPrint jasperPrint,String fileName) throws CustomException {
-        byte[] bytes = jasperPrintExportIMG(jasperPrint);
-       return jasperPrintExportIMGMultipartFile(bytes,fileName);
-    }
-    /**
-     *
-     * @param source 模板文件
-     * @param fileName 文件名称
-     * @return multipartFile
-     *
-     */
-    public static MultipartFile jasperPrintExportIMGMultipartFile(byte[] source,String fileName) throws CustomException {
-        FileItemFactory factory = new DiskFileItemFactory(16, null);
-        FileItem file = factory.createItem(fileName+".png", "image/png", false, fileName+".png");
-        return createMultipartFile(source,file);
-    }
-    /**
-     *
-     * @param jasperPrint 模板文件
-     * @param fileName 文件名称
-     * @return multipartFile
-     *
-     */
-    public static MultipartFile jasperPrintExportEXCELMultipartFile(JasperPrint jasperPrint,String fileName) throws CustomException {
-        byte[] bytes = jasperPrintExportEXCEL(jasperPrint);
-        return jasperPrintExportEXCELMultipartFile(bytes,fileName);
-    }
-    /**
-     *
-     * @param source 模板文件
-     * @param fileName 文件名称
-     * @return multipartFile
-     *
-     */
-    public static MultipartFile jasperPrintExportEXCELMultipartFile(byte[] source,String fileName) throws CustomException {
-        FileItemFactory factory = new DiskFileItemFactory(16, null);
-        FileItem  file = factory.createItem(fileName + ".xls", "application/vnd.ms-excel", false, fileName + ".xls");
-        return createMultipartFile(source,file);
-    }
-
-    /**
-     * 文件转换
-     * @param bytes 数据
-     * @param fileItem 文件格式
-     * @return
-     */
-    private static MultipartFile createMultipartFile(byte[] bytes, FileItem fileItem) throws CustomException {
-        ByteArrayInputStream inputStream=null;
-        try {
-            inputStream= new ByteArrayInputStream(bytes);
-            IOUtils.copy(inputStream, fileItem.getOutputStream());
-            return new CommonsMultipartFile(fileItem);
-        } catch (IOException e) {
-            throw new CustomException("文件转换出错！");
-        }finally{
-            try {
-                if(ObjectUtils.isEmpty(inputStream)){
-                    inputStream.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    /**
+//     * @param jasperPrint 模板文件
+//     * @param fileName    文件名称
+//     * @return multipartFile
+//     */
+//    public static MultipartFile jasperPrintExportPDFMultipartFile(JasperPrint jasperPrint, String fileName) throws CustomException {
+//        byte[] bytes = jasperPrintExportPDF(jasperPrint);
+//        return jasperPrintExportPDFMultipartFile(bytes, fileName);
+//    }
+//
+//    /**
+//     * @param jasperPrint 模板文件
+//     * @param fileName    文件名称
+//     * @return multipartFile
+//     */
+//    public static MultipartFile jasperPrintExportWORDMultipartFile(JasperPrint jasperPrint, String fileName) throws CustomException {
+//        byte[] bytes = jasperPrintExportWORD(jasperPrint);
+//        return jasperPrintExportWORDMultipartFile(bytes, fileName);
+//    }
+//
+//    /**
+//     * @param source   模板文件
+//     * @param fileName 文件名称
+//     * @return multipartFile
+//     */
+//    public static MultipartFile jasperPrintExportWORDMultipartFile(byte[] source, String fileName) throws CustomException {
+//        FileItemFactory factory = new DiskFileItemFactory(16, null);
+//        FileItem file = factory.createItem(fileName + ".docx", "application/msword", false, fileName + ".docx");
+//        return createMultipartFile(source, file);
+//    }
+//
+//    /**
+//     * @param source   模板文件byte
+//     * @param fileName 文件名称
+//     * @return multipartFile
+//     */
+//    public static MultipartFile jasperPrintExportPDFMultipartFile(byte[] source, String fileName) throws CustomException {
+//        FileItemFactory factory = new DiskFileItemFactory(16, null);
+//        FileItem file = factory.createItem(fileName + ".pdf", "application/pdf", false, fileName + ".pdf");
+//        return createMultipartFile(source, file);
+//    }
+//
+//    /**
+//     *
+//     * @param jasperPrint 模板文件
+//     * @param fileName 文件名称
+//     * @return multipartFile
+//     *
+//     */
+//    public static MultipartFile jasperPrintExportIMGMultipartFile(JasperPrint jasperPrint,String fileName) throws CustomException {
+//        byte[] bytes = jasperPrintExportIMG(jasperPrint);
+//       return jasperPrintExportIMGMultipartFile(bytes,fileName);
+//    }
+//    /**
+//     *
+//     * @param source 模板文件
+//     * @param fileName 文件名称
+//     * @return multipartFile
+//     *
+//     */
+//    public static MultipartFile jasperPrintExportIMGMultipartFile(byte[] source,String fileName) throws CustomException {
+//        FileItemFactory factory = new DiskFileItemFactory(16, null);
+//        FileItem file = factory.createItem(fileName+".png", "image/png", false, fileName+".png");
+//        return createMultipartFile(source,file);
+//    }
+//    /**
+//     *
+//     * @param jasperPrint 模板文件
+//     * @param fileName 文件名称
+//     * @return multipartFile
+//     *
+//     */
+//    public static MultipartFile jasperPrintExportEXCELMultipartFile(JasperPrint jasperPrint,String fileName) throws CustomException {
+//        byte[] bytes = jasperPrintExportEXCEL(jasperPrint);
+//        return jasperPrintExportEXCELMultipartFile(bytes,fileName);
+//    }
+//    /**
+//     *
+//     * @param source 模板文件
+//     * @param fileName 文件名称
+//     * @return multipartFile
+//     *
+//     */
+//    public static MultipartFile jasperPrintExportEXCELMultipartFile(byte[] source,String fileName) throws CustomException {
+//        FileItemFactory factory = new DiskFileItemFactory(16, null);
+//        FileItem  file = factory.createItem(fileName + ".xls", "application/vnd.ms-excel", false, fileName + ".xls");
+//        return createMultipartFile(source,file);
+//    }
+//
+//    /**
+//     * 文件转换
+//     * @param bytes 数据
+//     * @param fileItem 文件格式
+//     * @return
+//     */
+//    private static MultipartFile createMultipartFile(byte[] bytes, FileItem fileItem) throws CustomException {
+//        ByteArrayInputStream inputStream=null;
+//        try {
+//            inputStream= new ByteArrayInputStream(bytes);
+//            IOUtils.copy(inputStream, fileItem.getOutputStream());
+//            return new CommonsMultipartFile(fileItem);
+//        } catch (IOException e) {
+//            throw new CustomException("文件转换出错！");
+//        }finally{
+//            try {
+//                if(ObjectUtils.isEmpty(inputStream)){
+//                    inputStream.close();
+//                }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
 }

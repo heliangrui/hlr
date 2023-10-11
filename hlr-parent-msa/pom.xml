@@ -16,6 +16,10 @@
     
     <dependencies>
         <dependency>
+            <groupId>com.hlr.common</groupId>
+            <artifactId>hlr-common</artifactId>
+        </dependency>
+        <dependency>
             <groupId>hlr.start</groupId>
             <artifactId>hlr-start</artifactId>
         </dependency>

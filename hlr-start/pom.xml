@@ -19,6 +19,10 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>com.hlr.common</groupId>
+            <artifactId>hlr-common</artifactId>
+        </dependency>
+        <dependency>
             <groupId>hlr.core.tool</groupId>
             <artifactId>hlr-core-tool</artifactId>
         </dependency>

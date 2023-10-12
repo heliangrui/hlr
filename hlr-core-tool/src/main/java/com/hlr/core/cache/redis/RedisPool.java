@@ -102,4 +102,12 @@ public class RedisPool {
     public void setServer(String server) {
         this.server = server;
     }
+
+    public ShardedJedisPool getPool() {
+        return pool;
+    }
+
+    public void setPool(ShardedJedisPool pool) {
+        this.pool = pool;
+    }
 }

@@ -30,7 +30,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
             initMethod = "init",
             destroyMethod = "shutDown"
     )
-    @ConditionalOnProperty({"fhd.redis.server"})
+    @ConditionalOnProperty({"hlr.redis.server"})
     RedisPool redisPool(RedisPoolConfigProperties redisPoolConfigProperties) {
         RedisPool pool = new RedisPool();
         pool.setServer(redisPoolConfigProperties.getServer());

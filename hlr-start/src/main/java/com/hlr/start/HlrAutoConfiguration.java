@@ -1,8 +1,10 @@
 package com.hlr.start;
 
+import com.hlr.core.cache.impl.RedisCacheService;
 import com.hlr.core.cache.redis.RedisPool;
 import com.hlr.start.config.RedisPoolConfigProperties;
 import org.springframework.beans.BeansException;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -41,5 +43,12 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
         pool.setSoTimeout(redisPoolConfigProperties.getSoTimeout());
         return pool;
     }
+
+    @Bean
+    @ConditionalOnBean({RedisPool.class})
+    RedisCacheService redisCacheService(RedisPool redisPool){
+        return new RedisCacheService(redisPool.getPool());
+    }
+    
     
 }

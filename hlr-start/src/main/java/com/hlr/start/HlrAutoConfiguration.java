@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({RedisPoolConfigProperties.class})
 public class HlrAutoConfiguration implements ApplicationContextAware {
     private static ApplicationContext applicationContext;
+
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         HlrAutoConfiguration.applicationContext = applicationContext;
@@ -46,9 +47,12 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
 
     @Bean
     @ConditionalOnBean({RedisPool.class})
-    RedisCacheService redisCacheService(RedisPool redisPool){
+    RedisCacheService redisCacheService(RedisPool redisPool) {
         return new RedisCacheService(redisPool.getPool());
     }
-    
-    
+
+    @Bean
+    HlrReadyApplicationListener hlrReadyApplicationListener() {
+        return new HlrReadyApplicationListener();
+    }
 }

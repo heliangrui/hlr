@@ -178,16 +178,14 @@ public class RedisCacheService implements CacheService {
             if (key != null) {
                 byte[] keybytes = key.getBytes(StandardCharsets.UTF_8);
                 byte[] bytes = resource.get(keybytes);
-
-                if (bytes == null) {
-                    object = cacheSource.getValue();
-                    if (expiry == 0) {
-                        resource.set(keybytes, SerializeUtils.serialize(object));
-                    } else {
-                        resource.setex(keybytes, expiry, SerializeUtils.serialize(object));
-                    }
-                } else {
+                if (bytes != null) {
                     object = SerializeUtils.unSerialize(bytes);
+                }
+                Object value = cacheSource.getValue();
+                if (expiry == 0) {
+                    resource.set(keybytes, SerializeUtils.serialize(value));
+                } else {
+                    resource.setex(keybytes, expiry, SerializeUtils.serialize(value));
                 }
             }
         } catch (Exception e) {

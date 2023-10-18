@@ -1,7 +1,9 @@
 package com.hlr.start;
 
+import com.hlr.core.cache.CacheService;
 import com.hlr.core.cache.impl.RedisCacheService;
 import com.hlr.core.cache.redis.RedisPool;
+import com.hlr.start.aop.MethodCacheAspect;
 import com.hlr.start.config.RedisPoolConfigProperties;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -55,4 +57,16 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
     HlrReadyApplicationListener hlrReadyApplicationListener() {
         return new HlrReadyApplicationListener();
     }
+
+    @Bean
+    @ConditionalOnBean({CacheService.class})
+    @ConditionalOnProperty(
+            value = {"hlr.method.new-cache.enabled"},
+            havingValue = "false",
+            matchIfMissing = true
+    )
+    MethodCacheAspect methodCacheAspect(CacheService cacheService) {
+        return new MethodCacheAspect(cacheService);
+    }
+
 }

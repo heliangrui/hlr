@@ -52,6 +52,12 @@
       "description": "端口",
       "sourceType": "com.fhd.starter.config.RedisPoolConfigProperties",
       "defaultValue": 6379
+    },
+    {
+      "name": "hlr.method.new-cache.enabled",
+      "type": "java.lang.boolean",
+      "description": "方法缓存",
+      "defaultValue": true
     }
   ]
 }

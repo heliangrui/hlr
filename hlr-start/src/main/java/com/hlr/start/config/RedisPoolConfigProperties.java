@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  *
  * @author hlr
  */
-@ConfigurationProperties( prefix = "hlr.redis")
+@ConfigurationProperties(prefix = "hlr.redis")
 public class RedisPoolConfigProperties {
     private int maxTotal = 10;
     private int maxIdle = 1;

@@ -14,15 +14,10 @@ import net.sf.jasperreports.engine.export.JRXlsExporter;
 import net.sf.jasperreports.engine.export.JRXlsExporterParameter;
 import net.sf.jasperreports.engine.export.ooxml.JRDocxExporter;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -38,36 +33,34 @@ import java.util.Map;
 public class JasperManager {
 
     /**
-     *
      * @param fileInputStream 模板文件流
-     * @param map pamater参数
-     * @param list details参数
+     * @param map             pamater参数
+     * @param list            details参数
      * @return 已填冲文件
      */
     public static JasperPrint createFillJasperPrint(FileInputStream fileInputStream, Map map, List list) throws CustomException {
 
         try {
-        if(CollectionUtils.isEmpty(list)){
-            //空数据源 details
-            return JasperFillManager.fillReport(fileInputStream, map, new net.sf.jasperreports.engine.JREmptyDataSource());
-        }else{
-            JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(list);
-            return JasperFillManager.fillReport(fileInputStream, map, ds);
-        }
+            if (CollectionUtils.isEmpty(list)) {
+                //空数据源 details
+                return JasperFillManager.fillReport(fileInputStream, map, new net.sf.jasperreports.engine.JREmptyDataSource());
+            } else {
+                JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(list);
+                return JasperFillManager.fillReport(fileInputStream, map, ds);
+            }
 
         } catch (JRException e) {
-           throw new CustomException("模板填充错误！");
+            throw new CustomException("模板填充错误！");
         }
     }
 
     /**
-     *
      * @param fileInputStream 模板文件流
-     * @param map pamater参数
+     * @param map             pamater参数
      * @return 已填冲文件
      */
     public static JasperPrint createFillJasperPrint(FileInputStream fileInputStream, Map map) throws CustomException {
-        return createFillJasperPrint(fileInputStream,map,null);
+        return createFillJasperPrint(fileInputStream, map, null);
     }
 
     /**
@@ -135,24 +128,18 @@ public class JasperManager {
              */
             JRXlsExporter exporter = new JRXlsExporter();
             oStream = new ByteArrayOutputStream();
-            exporter
-                    .setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+            exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
             exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, oStream);
-            exporter.setParameter(
-                    JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS,
-                    Boolean.TRUE);
-            exporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET,
-                    Boolean.FALSE);
-            exporter.setParameter(
-                    JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND,
-                    Boolean.FALSE);
+            exporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
+            exporter.setParameter(JRXlsExporterParameter.IS_ONE_PAGE_PER_SHEET, Boolean.FALSE);
+            exporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
             exporter.exportReport();
             return oStream.toByteArray();
         } catch (Exception e) {
             throw new CustomException("模板转换错误！");
-        }finally{
+        } finally {
             try {
-                if(!ObjectUtils.isEmpty(oStream)){
+                if (!ObjectUtils.isEmpty(oStream)) {
                     oStream.close();
                 }
             } catch (IOException e) {
@@ -166,26 +153,26 @@ public class JasperManager {
      * @return img文件byte
      */
     public static byte[] jasperPrintExportIMG(JasperPrint jasperPrint) throws CustomException {
-        ByteArrayOutputStream outputStream=null;
+        ByteArrayOutputStream outputStream = null;
         try {
             List<BufferedImage> bufferedImageList = new ArrayList();
             outputStream = new ByteArrayOutputStream();
             for (int i = 0; i < jasperPrint.getPages().size(); i++) {
                 bufferedImageList.add((BufferedImage) (JasperPrintManager.printPageToImage(jasperPrint, i, Float.valueOf(3))));
             }
-            BufferedImage bufferedImage =null;
-            try{
+            BufferedImage bufferedImage = null;
+            try {
                 bufferedImage = ImageUtils.mergeImage2(bufferedImageList);
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             ImageIO.write(bufferedImage, "png", outputStream);
-            return  outputStream.toByteArray();
+            return outputStream.toByteArray();
         } catch (Exception e) {
             throw new CustomException("模板转换错误！");
-        }finally{
+        } finally {
             try {
-                if(!ObjectUtils.isEmpty(outputStream)){
+                if (!ObjectUtils.isEmpty(outputStream)) {
                     outputStream.close();
                 }
             } catch (IOException e) {

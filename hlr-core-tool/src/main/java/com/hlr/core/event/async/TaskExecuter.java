@@ -58,7 +58,7 @@ public class TaskExecuter extends AbstractLoopThread implements ITaskExecuter {
             this.maxSize = Integer.MAX_VALUE;
         }
 
-        this.queue = new LinkedBlockingQueue(this.maxSize);
+        this.queue = new LinkedBlockingQueue<>(this.maxSize);
         this.logger.debug("start task executer capacity:{}", this.maxSize);
         super.start();
     }

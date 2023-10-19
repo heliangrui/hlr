@@ -8,12 +8,14 @@ package com.hlr.core.event;
  * @author hlr
  */
 public interface IThreadsPool {
-    
+
     // 方法开始
     void start();
+
     // 方法关闭
     void stop();
+
     // 方法立即关闭
     void stopNow(boolean flag);
-    
+
 }

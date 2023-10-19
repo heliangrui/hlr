@@ -8,7 +8,7 @@ package com.hlr.core.event.async;
  * @author hlr
  */
 public interface ITaskExecuter {
-    
+
     void setThreadPoolSize(int size);
 
     void start();
@@ -24,5 +24,5 @@ public interface ITaskExecuter {
     int getCounter();
 
     void setMaxRetryTime(int var1);
-    
+
 }

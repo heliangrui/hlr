@@ -20,63 +20,65 @@ public class GisConvert {
     private static double ee = 0.00669342162296594323;
 
     public static boolean out_of_china(double lon, double lat) {
-        if(lon < 72.004 || lon > 137.8347) {
+        if (lon < 72.004 || lon > 137.8347) {
             return true;
-        } else if(lat < 0.8293 || lat > 55.8271) {
+        } else if (lat < 0.8293 || lat > 55.8271) {
             return true;
         }
         return false;
     }
 
     // point 坐标转换
+
     /**
+     * @param type 转换类型  0天地图 1高德/腾讯 2百度坐标
      * @Point: 原始点
-     * @param type 转换类型  0天地图 1高德/腾讯 2百度坐标 
-     * **/
-    public static Point autoExchange(Point point, Integer type){
+     **/
+    public static Point autoExchange(Point point, Integer type) {
         GisTypeEnums tag = GisTypeEnums.getData(type);
-        Point result=null;
-        if(point.getLongitude()==null || point.getLatitude()==null){
+        Point result = null;
+        if (point.getLongitude() == null || point.getLatitude() == null) {
             return point;
         }
 
-        switch (GisTypeEnums.getData(point.getType())){
+        switch (GisTypeEnums.getData(point.getType())) {
             case BD09:
-                switch (tag){
+                switch (tag) {
                     case WGS84:
-                        result=bd09towgs84(point.getLongitude(),point.getLatitude());
+                        result = bd09towgs84(point.getLongitude(), point.getLatitude());
                         break;
                     case GCJ02:
-                        result=bd09togcj02(point.getLongitude(),point.getLatitude());
+                        result = bd09togcj02(point.getLongitude(), point.getLatitude());
                         break;
                     case BD09:
-                        result=point;
+                        result = point;
                         break;
                 }
                 break;
             case GCJ02:
-                switch (tag){
+                switch (tag) {
                     case WGS84:
-                        result=gcj02towgs84(point.getLongitude(),point.getLatitude());
+                        result = gcj02towgs84(point.getLongitude(), point.getLatitude());
                         break;
                     case GCJ02:
-                        result=point;
+                        result = point;
                         break;
                     case BD09:
-                        result=gcj02tobd09(point.getLongitude(),point.getLatitude());
+                        result = gcj02tobd09(point.getLongitude(), point.getLatitude());
                         break;
                 }
                 break;
             case WGS84:
-                switch (tag){
+                switch (tag) {
                     case WGS84:
-                        result=point;
+                        result = point;
                         break;
                     case GCJ02:
-                        result=wgs84togcj02(point.getLongitude(),point.getLatitude());;
+                        result = wgs84togcj02(point.getLongitude(), point.getLatitude());
+                        ;
                         break;
                     case BD09:
-                        result=wgs84tobd09(point.getLongitude(),point.getLatitude());
+                        result = wgs84tobd09(point.getLongitude(), point.getLatitude());
                         break;
                 }
                 break;
@@ -108,7 +110,7 @@ public class GisConvert {
      * @return 火星坐标数组
      */
     public static Point wgs84togcj02(double wgs_lon, double wgs_lat) {
-        Point point=new Point();
+        Point point = new Point();
         point.setType(GisTypeEnums.GCJ02.value);
         if (out_of_china(wgs_lon, wgs_lat)) {
             point.setLatitude(wgs_lat);
@@ -138,7 +140,7 @@ public class GisConvert {
      * @return WGS84坐标数组
      */
     public static Point gcj02towgs84(double gcj_lon, double gcj_lat) {
-        Point point=new Point();
+        Point point = new Point();
         point.setType(GisTypeEnums.WGS84.value);
         if (out_of_china(gcj_lon, gcj_lat)) {
             point.setLatitude(gcj_lat);
@@ -164,14 +166,15 @@ public class GisConvert {
 
     /**
      * 火星坐标系(GCJ-02)转百度坐标系(BD-09)
-     *
+     * <p>
      * 谷歌、高德——>百度
+     *
      * @param gcj_lon 火星坐标经度
      * @param gcj_lat 火星坐标纬度
      * @return 百度坐标数组
      */
     public static Point gcj02tobd09(double gcj_lon, double gcj_lat) {
-        Point point=new Point();
+        Point point = new Point();
         point.setType(GisTypeEnums.BD09.value);
 
         double z = Math.sqrt(gcj_lon * gcj_lon + gcj_lat * gcj_lat) + 0.00002 * Math.sin(gcj_lat * x_pi);
@@ -185,14 +188,15 @@ public class GisConvert {
 
     /**
      * 百度坐标系(BD-09)转火星坐标系(GCJ-02)
-     *
+     * <p>
      * 百度——>谷歌、高德
+     *
      * @param bd_lon 百度坐标纬度
      * @param bd_lat 百度坐标经度
      * @return 火星坐标数组
      */
     public static Point bd09togcj02(double bd_lon, double bd_lat) {
-        Point point=new Point();
+        Point point = new Point();
         point.setType(GisTypeEnums.GCJ02.value);
 
         double x = bd_lon - 0.0065;
@@ -231,5 +235,5 @@ public class GisConvert {
         Point wgs84 = gcj02towgs84(gcj.getLongitude(), gcj.getLatitude());
         return wgs84;
     }
-    
+
 }

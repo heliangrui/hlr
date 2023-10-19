@@ -15,17 +15,17 @@ import java.util.concurrent.TimeUnit;
  *
  * @author hlr
  */
-public abstract class AbstractLoopThread implements IThreadsPool{
-    
+public abstract class AbstractLoopThread implements IThreadsPool {
+
     private static final Logger logger = LoggerFactory.getLogger(AbstractLoopThread.class);
+    // 是否关闭
+    protected boolean closing = false;
     // 固定线程池大小
     private int threadpoolsize = 1;
     // 固定线程池名称
     private String name;
     // 固定线程池
     private ExecutorService[] threadPools;
-    // 是否关闭
-    protected boolean closing = false;
     // 是否日志
     private boolean needlog = true;
     private ThreadLocal<Object> bundles = new ThreadLocal();
@@ -43,7 +43,7 @@ public abstract class AbstractLoopThread implements IThreadsPool{
     public void start() {
         this.threadPools = new ExecutorService[this.threadpoolsize];
 
-        for(int i = 0; i < this.threadpoolsize; ++i) {
+        for (int i = 0; i < this.threadpoolsize; ++i) {
             int finalI = i;
             this.threadPools[i] = Executors.newFixedThreadPool(1, new ThreadFactory() {
                 public Thread newThread(Runnable r) {
@@ -67,13 +67,13 @@ public abstract class AbstractLoopThread implements IThreadsPool{
         }
 
 
-        for(int i = 0; i < this.threadpoolsize; ++i) {
+        for (int i = 0; i < this.threadpoolsize; ++i) {
             this.threadPools[i].shutdown();
             logger.debug("stoping. {} <<<<<", this.name + "-" + i);
         }
 
         try {
-            for(int i = 0; i < this.threadpoolsize; ++i) {
+            for (int i = 0; i < this.threadpoolsize; ++i) {
                 if (this.threadPools[i].awaitTermination(3L, TimeUnit.SECONDS)) {
                     logger.debug("grase stoped. {} <<<<<", this.name + "-" + i);
                 } else {
@@ -88,7 +88,7 @@ public abstract class AbstractLoopThread implements IThreadsPool{
         } catch (InterruptedException var4) {
             logger.error("", var4);
 
-            for(int i = 0; i < this.threadpoolsize; ++i) {
+            for (int i = 0; i < this.threadpoolsize; ++i) {
                 this.threadPools[i].shutdownNow();
             }
 
@@ -155,5 +155,5 @@ public abstract class AbstractLoopThread implements IThreadsPool{
     public void setName(String name) {
         this.name = name;
     }
-    
+
 }

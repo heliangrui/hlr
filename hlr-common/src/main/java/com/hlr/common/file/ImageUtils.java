@@ -15,23 +15,23 @@ public class ImageUtils {
         int w1 = list.get(0).getWidth();
         int h1 = list.get(0).getHeight();
 
-        int pageh=h1*list.size();
-        BufferedImage pageImage = new BufferedImage(w1,pageh,BufferedImage.TYPE_INT_RGB);
-        Graphics2D graphics =(Graphics2D) pageImage.getGraphics();
-        for(int i=0;i<list.size();i++){
-            graphics.drawImage(list.get(i),0,h1*i,null);
+        int pageh = h1 * list.size();
+        BufferedImage pageImage = new BufferedImage(w1, pageh, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics = (Graphics2D) pageImage.getGraphics();
+        for (int i = 0; i < list.size(); i++) {
+            graphics.drawImage(list.get(i), 0, h1 * i, null);
             list.get(i).getGraphics().dispose();
         }
         graphics.dispose();
         return pageImage;
     }
 
-    public static BufferedImage mergeImage2(List<BufferedImage> piclist){
+    public static BufferedImage mergeImage2(List<BufferedImage> piclist) {
         if (piclist == null || piclist.size() <= 0) {
             System.out.println("图片数组为空!");
             return null;
         }
-        BufferedImage imageResult =null;
+        BufferedImage imageResult = null;
         try {
             int height = 0, // 总高度
                     width = 0, // 总宽度

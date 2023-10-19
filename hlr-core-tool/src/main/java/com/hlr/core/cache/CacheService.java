@@ -12,7 +12,6 @@ public interface CacheService {
     void setString(String key, String value);
 
     /**
-     * 
      * @param key
      * @param value
      * @param expiry 时间 秒
@@ -20,22 +19,22 @@ public interface CacheService {
     void setString(String key, String value, int expiry);
 
     String getString(String paramString);
-    
+
     void setCacheable(CacheSource cacheSource);
-    
+
     void deleteCache(String key);
 
     /**
-     * 
      * @param cacheSource
-     * @param expiry 秒
+     * @param expiry      秒
      */
     void setCacheable(CacheSource cacheSource, int expiry);
-    
+
     void deleteCache(CacheSource cacheSource);
 
     /**
      * 获取缓存-为空设置缓存
+     *
      * @param cacheSource
      * @return
      */
@@ -43,23 +42,26 @@ public interface CacheService {
 
     /**
      * 获取缓存-为空设置缓存
+     *
      * @param cacheSource
-     * @param expiry 秒
+     * @param expiry      秒
      * @return
      */
     Object getCacheable(CacheSource cacheSource, int expiry);
 
     /**
      * 获取并设置缓存
+     *
      * @param cacheSource
      * @return
      */
     Object getAndSet(CacheSource cacheSource);
-    
+
     /**
      * 获取并设置缓存
+     *
      * @param cacheSource
-     * @param expiry 秒值
+     * @param expiry      秒值
      * @return
      */
     Object getAndSet(CacheSource cacheSource, int expiry);

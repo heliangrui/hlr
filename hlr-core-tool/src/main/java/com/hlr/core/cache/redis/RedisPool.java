@@ -25,8 +25,8 @@ public class RedisPool {
     private int connectionTimeout = 3000;
     private String server;
     private ShardedJedisPool pool;
-    
-    public void init(){
+
+    public void init() {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxTotal(maxTotal);
         config.setMaxIdle(maxIdle);
@@ -47,8 +47,8 @@ public class RedisPool {
         this.pool = new ShardedJedisPool(config, shards);
         log.debug("init redis pool {}", this.server);
     }
-    
-    public void shutDown(){
+
+    public void shutDown() {
         log.debug("shutDown redis pool");
         if (this.pool != null) {
             this.pool.close();

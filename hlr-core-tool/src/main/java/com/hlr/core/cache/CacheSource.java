@@ -10,7 +10,7 @@ package com.hlr.core.cache;
 public interface CacheSource {
     
     String getKey();
-    
+
     Object getValue() throws Throwable;
-    
+
 }

@@ -31,10 +31,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
         HlrAutoConfiguration.applicationContext = applicationContext;
     }
 
-    @Bean(
-            initMethod = "init",
-            destroyMethod = "shutDown"
-    )
+    @Bean(initMethod = "init", destroyMethod = "shutDown")
     @ConditionalOnProperty({"hlr.redis.server"})
     RedisPool redisPool(RedisPoolConfigProperties redisPoolConfigProperties) {
         RedisPool pool = new RedisPool();
@@ -60,11 +57,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
 
     @Bean
     @ConditionalOnBean({CacheService.class})
-    @ConditionalOnProperty(
-            value = {"hlr.method.new-cache.enabled"},
-            havingValue = "false",
-            matchIfMissing = true
-    )
+    @ConditionalOnProperty(value = {"hlr.method.new-cache.enabled"}, havingValue = "false", matchIfMissing = true)
     MethodCacheAspect methodCacheAspect(CacheService cacheService) {
         return new MethodCacheAspect(cacheService);
     }

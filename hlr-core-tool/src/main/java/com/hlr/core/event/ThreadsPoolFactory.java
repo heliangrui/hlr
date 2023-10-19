@@ -15,10 +15,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  * @author hlr
  */
-public class ThreadsPoolFactory implements IThreadsPool{
+public class ThreadsPoolFactory implements IThreadsPool {
     private static final Logger logger = LoggerFactory.getLogger(ThreadsPoolFactory.class);
     // 线程池
-    private List<IThreadsPool> pools = new ArrayList();
+    private List<IThreadsPool> pools = new ArrayList<>();
     private AtomicBoolean processed = new AtomicBoolean(false);
 
     public ThreadsPoolFactory() {
@@ -29,8 +29,8 @@ public class ThreadsPoolFactory implements IThreadsPool{
             logger.debug("start threadspools {}", this.pools.size());
             Iterator var1 = this.pools.iterator();
 
-            while(var1.hasNext()) {
-                IThreadsPool pool = (IThreadsPool)var1.next();
+            while (var1.hasNext()) {
+                IThreadsPool pool = (IThreadsPool) var1.next();
                 logger.debug("threadspool {} starting...", pool);
                 pool.start();
                 logger.debug("threadspool {} started.", pool);
@@ -46,8 +46,8 @@ public class ThreadsPoolFactory implements IThreadsPool{
         if (this.processed.get()) {
             logger.debug("stop threadspools {}", this.pools.size());
 
-            for(int i = this.pools.size() - 1; i >= 0; --i) {
-                IThreadsPool pool = (IThreadsPool)this.pools.get(i);
+            for (int i = this.pools.size() - 1; i >= 0; --i) {
+                IThreadsPool pool = (IThreadsPool) this.pools.get(i);
                 logger.debug("threadspool {} stoping...", pool);
                 pool.stop();
                 logger.debug("threadspool {} stoped.", pool);
@@ -63,8 +63,8 @@ public class ThreadsPoolFactory implements IThreadsPool{
         if (this.processed.get()) {
             logger.debug("stop threadspools {}", this.pools.size());
 
-            for(int i = this.pools.size() - 1; i >= 0; --i) {
-                IThreadsPool pool = (IThreadsPool)this.pools.get(i);
+            for (int i = this.pools.size() - 1; i >= 0; --i) {
+                IThreadsPool pool = (IThreadsPool) this.pools.get(i);
                 logger.debug("threadspool {} stoping...", pool);
                 pool.stopNow(discart);
                 logger.debug("threadspool {} stoped.", pool);

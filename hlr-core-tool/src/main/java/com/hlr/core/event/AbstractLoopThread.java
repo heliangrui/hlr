@@ -57,10 +57,10 @@ public abstract class AbstractLoopThread implements IThreadsPool{
     }
 
     public void stop() {
-        this.stopnow(false);
+        this.stopNow(false);
     }
 
-    public void stopnow(boolean discart) {
+    public void stopNow(boolean discart) {
         this.closing = true;
         if (!discart) {
             this.destory();
@@ -140,11 +140,11 @@ public abstract class AbstractLoopThread implements IThreadsPool{
         this.bundles.set(value);
     }
 
-    public int getThreadpoolsize() {
+    public int getThreadPoolSize() {
         return this.threadpoolsize;
     }
 
-    public void setThreadpoolsize(int threadpoolsize) {
+    public void setThreadPoolSize(int threadpoolsize) {
         this.threadpoolsize = threadpoolsize;
     }
 

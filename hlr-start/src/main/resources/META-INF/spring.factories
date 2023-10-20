@@ -1,2 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  com.hlr.start.HlrAutoConfiguration
+  com.hlr.start.HlrAutoConfiguration,\
+  com.hlr.start.WebAutoConfiguration,\
+  com.hlr.start.WebMvcConfiguration

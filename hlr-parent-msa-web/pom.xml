@@ -13,11 +13,18 @@
     <artifactId>hlr-parent-msa-web</artifactId>
     <version>1.0.1-HLR</version>
     <packaging>pom</packaging>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+
         </dependency>
     </dependencies>
 

@@ -61,7 +61,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
 
     @Bean
     @ConditionalOnBean({CacheService.class})
-    @ConditionalOnProperty(value = {"hlr.method.new-cache.enabled"}, havingValue = "false", matchIfMissing = true)
+    @ConditionalOnProperty(value = {"hlr.method.cache.enabled"}, havingValue = "false", matchIfMissing = true)
     MethodCacheAspect methodCacheAspect(CacheService cacheService) {
         return new MethodCacheAspect(cacheService);
     }

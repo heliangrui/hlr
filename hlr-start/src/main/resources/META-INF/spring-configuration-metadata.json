@@ -54,7 +54,7 @@
       "defaultValue": 6379
     },
     {
-      "name": "hlr.method.new-cache.enabled",
+      "name": "hlr.method.cache.enabled",
       "type": "java.lang.boolean",
       "description": "方法缓存",
       "defaultValue": true

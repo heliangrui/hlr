@@ -6,6 +6,8 @@ import com.hlr.core.cache.redis.RedisPool;
 import com.hlr.start.aop.MethodCacheAspect;
 import com.hlr.start.config.HlrConfigProperties;
 import com.hlr.start.config.RedisPoolConfigProperties;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -25,6 +27,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableConfigurationProperties({RedisPoolConfigProperties.class, HlrConfigProperties.class})
 public class HlrAutoConfiguration implements ApplicationContextAware {
+    private static final Logger logger = LoggerFactory.getLogger(HlrAutoConfiguration.class);
     private static ApplicationContext applicationContext;
 
     @Override

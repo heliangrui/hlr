@@ -1,5 +1,6 @@
 package com.hlr.start.utils;
 
+import org.apache.dubbo.rpc.RpcContext;
 import org.slf4j.MDC;
 import org.springframework.core.NamedThreadLocal;
 
@@ -59,6 +60,12 @@ public class MsaContextHolder {
             MDC.put("traceId", traceId);
         }
 
+    }
+
+    public static void setDubboAttachemnt(HttpServletRequest request) {
+        initTraceIdAndMdc(request);
+        RpcContext.getClientAttachment().setAttachment("traceId", TraceUtil.getTraceId(request));
+        RpcContext.getClientAttachment().setAttachment("tag", TraceUtil.getTag(request));
     }
 
 }

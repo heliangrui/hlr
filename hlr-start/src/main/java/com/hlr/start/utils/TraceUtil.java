@@ -1,5 +1,7 @@
 package com.hlr.start.utils;
 
+import org.apache.dubbo.rpc.RpcContext;
+
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -33,11 +35,18 @@ public class TraceUtil {
         }
 
         if (trace == null) {
+            trace = getTraceFromDubbo(key);
+        }
+
+        if (trace == null) {
             trace = MsaContextHolder.get(key);
         }
 
         return trace;
     }
 
+    private static String getTraceFromDubbo(String key) {
+        return RpcContext.getServerAttachment().getAttachment(key);
+    }
 
 }

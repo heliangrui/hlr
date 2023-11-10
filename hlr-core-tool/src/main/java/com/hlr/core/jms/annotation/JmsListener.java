@@ -22,10 +22,6 @@ import java.lang.annotation.Target;
 public @interface JmsListener {
     
     String topic() default "";
-    String topicVar() default "";
-
-    String tags() default "*";
-
     Class<?> jmsObject();
     
 }

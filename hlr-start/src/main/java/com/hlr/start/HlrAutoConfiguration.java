@@ -3,12 +3,17 @@ package com.hlr.start;
 import com.hlr.core.cache.CacheService;
 import com.hlr.core.cache.impl.RedisCacheService;
 import com.hlr.core.cache.redis.RedisPool;
+import com.hlr.core.jms.JmsMessageListener;
+import com.hlr.core.jms.annotation.JmsListener;
+import com.hlr.core.jms.kafka.JmsKafkaMQReceiver;
 import com.hlr.start.aop.MethodCacheAspect;
 import com.hlr.start.config.HlrConfigProperties;
+import com.hlr.start.config.KafkaConfigProperties;
 import com.hlr.start.config.RedisPoolConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,6 +21,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * HlrAutoConfiguration
@@ -25,10 +33,12 @@ import org.springframework.context.annotation.Configuration;
  * @author hlr
  */
 @Configuration
-@EnableConfigurationProperties({RedisPoolConfigProperties.class, HlrConfigProperties.class})
+@EnableConfigurationProperties({RedisPoolConfigProperties.class, HlrConfigProperties.class, KafkaConfigProperties.class})
 public class HlrAutoConfiguration implements ApplicationContextAware {
     private static final Logger logger = LoggerFactory.getLogger(HlrAutoConfiguration.class);
     private static ApplicationContext applicationContext;
+    @Value("${spring.application.name}")
+    private String appName;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -65,5 +75,45 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
     MethodCacheAspect methodCacheAspect(CacheService cacheService) {
         return new MethodCacheAspect(cacheService);
     }
+
+    @Bean
+    @ConditionalOnProperty({"hlr.kafka.kafkaAddrs"})
+    @ConditionalOnBean({JmsMessageListener.class})
+    JmsKafkaMQReceiver jmsKafkaMQReceiver(KafkaConfigProperties kafkaConfigProperties) {
+        JmsKafkaMQReceiver jmsKafkaMQReceiver = new JmsKafkaMQReceiver();
+        // 基础信心配置
+        jmsKafkaMQReceiver.setClientId(kafkaConfigProperties.getClientId() == null ? this.appName : kafkaConfigProperties.getClientId());
+        jmsKafkaMQReceiver.setKafkaAddrs(kafkaConfigProperties.getKafkaAddrs());
+        jmsKafkaMQReceiver.setFetchMinBytes(kafkaConfigProperties.getFetchMinBytes());
+        jmsKafkaMQReceiver.setPollTimeout(kafkaConfigProperties.getPollTimeout());
+        jmsKafkaMQReceiver.setMaxPollRecords(kafkaConfigProperties.getMaxPollRecords());
+        jmsKafkaMQReceiver.setConsumerGroup(kafkaConfigProperties.getConsumerGroup());
+        jmsKafkaMQReceiver.setCousumeThreadMin(kafkaConfigProperties.getThreadSize());
+        // 获取监听消息bean对象
+        Map<String, Object> jmsListeners = applicationContext.getBeansWithAnnotation(JmsListener.class);
+        // 存放注解配置 和 监听消息对象
+        Map<String, JmsMessageListener> listeners = new HashMap();
+        jmsListeners.forEach((a, b) -> {
+
+            if (b instanceof JmsMessageListener) {
+                //获取监听消息对象
+                JmsMessageListener jmsMessageListener = (JmsMessageListener) b;
+                //获取监听消息注解配置
+                JmsListener annotation = jmsMessageListener.getClass().getAnnotation(JmsListener.class);
+                if (annotation != null) {
+                    // 组装注解配置信息
+                    StringBuilder sb = new StringBuilder(annotation.topic());
+                    sb.append("@").append(annotation.jmsObject().getName());
+                    listeners.put(sb.toString(), jmsMessageListener);
+                }
+
+            }
+
+        });
+        jmsKafkaMQReceiver.setListeners(listeners);
+        return jmsKafkaMQReceiver;
+
+    }
+
 
 }

@@ -76,22 +76,28 @@
       "description": "同步策略，默认为1，写入leader就返回；配置为0，表示不管结果,速度最快；配置-1为写入leader和所有flower再响应",
       "sourceType": "com.hlr.start.config.KafkaConfigProperties",
       "defaultValue": 1
+    },{
+      "name": "hlr.kafka.threadSize",
+      "type": "java.lang.Integer",
+      "description": "可根据最大分区进行调整，消费消息线程数，优先根据分区取模，如果当前分区队列满时，如果有空闲队列，优先使用空闲队列",
+      "sourceType": "com.hlr.start.config.KafkaConfigProperties",
+      "defaultValue": 1
     },
     {
-      "name": "hlr.kafka.batch-size",
+      "name": "hlr.kafka.batchSize",
       "type": "java.lang.Integer",
       "description": "积攒多少字节后批量发送，默认为0，调大后可以提高吞吐量",
       "sourceType": "com.hlr.start.config.KafkaConfigProperties",
       "defaultValue": 0
     },
     {
-      "name": "hlr.kafka.client-id",
+      "name": "hlr.kafka.clientId",
       "type": "java.lang.String",
       "description": "客户端id，只是作为记号使用",
       "sourceType": "com.hlr.start.config.KafkaConfigProperties"
     },
     {
-      "name": "hlr.kafka.consumer-group",
+      "name": "hlr.kafka.consumerGroup",
       "type": "java.lang.String",
       "description": "可以为空，消费组相同，集群消费；消费组不同，广播消费",
       "sourceType": "com.hlr.start.config.KafkaConfigProperties"
@@ -110,21 +116,21 @@
       "sourceType": "com.hlr.start.config.KafkaConfigProperties"
     },
     {
-      "name": "hlr.kafka.linger-ms",
+      "name": "hlr.kafka.lingerMs",
       "type": "java.lang.Integer",
       "description": "最小批量发送等待毫秒，默认为0ms，就是来一条就发，调大后可以提高吞吐量",
       "sourceType": "com.hlr.start.config.KafkaConfigProperties",
       "defaultValue": 0
     },
     {
-      "name": "hlr.kafka.max-poll-records",
+      "name": "hlr.kafka.maxPollRecords",
       "type": "java.lang.Integer",
       "description": "消费者参数 一次最多拉取记录数",
       "sourceType": "com.hlr.start.config.KafkaConfigProperties",
       "defaultValue": 500
     },
     {
-      "name": "hlr.kafka.poll-timeout",
+      "name": "hlr.kafka.pollTimeout",
       "type": "java.lang.Integer",
       "description": "消费者参数 批量拉取等待时间",
       "sourceType": "com.hlr.start.config.KafkaConfigProperties",

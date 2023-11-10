@@ -13,19 +13,31 @@ public class KafkaConfigProperties {
 
     private String clientId = null;
     private String kafkaAddrs;
+    // 发送失败，重试次数
     private int retries = 0;
+    //最小批量发送等待毫秒，默认为0ms
     private int lingerMs = 0;
+    // 积攒多少字节后批量发送
     private int batchSize = 0;
+    // 同步策略
     private int acks = 1;
-    @Deprecated
-    private int threadpoolsize = 1;
-    @Deprecated
-    private int maxSize = 100;
     private String consumerGroup = null;
+    // 消费者参数 批量拉取字节数
     private int fetchMinBytes = 500;
+    // 批量拉取等待时间
     private int pollTimeout = 1000;
+    //一次最多拉取记录数
     private int maxPollRecords = 500;
-    private Map<String, String> topics;
+    // 可根据最大分区进行调整，消费消息线程数
+    private int threadSize = 16;
+
+    public int getThreadSize() {
+        return threadSize;
+    }
+
+    public void setThreadSize(int threadSize) {
+        this.threadSize = threadSize;
+    }
 
     public String getClientId() {
         return clientId;
@@ -74,23 +86,7 @@ public class KafkaConfigProperties {
     public void setAcks(int acks) {
         this.acks = acks;
     }
-
-    public int getThreadpoolsize() {
-        return threadpoolsize;
-    }
-
-    public void setThreadpoolsize(int threadpoolsize) {
-        this.threadpoolsize = threadpoolsize;
-    }
-
-    public int getMaxSize() {
-        return maxSize;
-    }
-
-    public void setMaxSize(int maxSize) {
-        this.maxSize = maxSize;
-    }
-
+    
     public String getConsumerGroup() {
         return consumerGroup;
     }
@@ -121,13 +117,5 @@ public class KafkaConfigProperties {
 
     public void setMaxPollRecords(int maxPollRecords) {
         this.maxPollRecords = maxPollRecords;
-    }
-
-    public Map<String, String> getTopics() {
-        return topics;
-    }
-
-    public void setTopics(Map<String, String> topics) {
-        this.topics = topics;
     }
 }

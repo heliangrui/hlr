@@ -1,6 +1,5 @@
 package com.hlr.core.jms.kafka;
 
-import com.fasterxml.jackson.databind.deser.std.StringDeserializer;
 import com.hlr.core.event.IThreadsPool;
 import com.hlr.core.jms.IJmsReceiver;
 import com.hlr.core.jms.JmsMessageListener;
@@ -8,12 +7,12 @@ import com.hlr.core.jms.JmsObject;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ExecutorService;
@@ -30,136 +29,120 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class JmsKafkaMQReceiver implements IThreadsPool, IJmsReceiver {
 
     private static final Logger logger = LoggerFactory.getLogger(JmsKafkaMQReceiver.class);
-
+    // 存放注解配置 和 监听消息对象
+    Map<String, JmsMessageListener> listeners = new HashMap();
+    Map<String, Class<JmsObject>> topicTypes;
+    Map<String, JmsMessageListener> topicListener;
+    // kafka 客户端
     private KafkaConsumer consumer = null;
+    // 地址
     private String kafkaAddrs;
+    // 客户端标识
     private String clientId = null;
     private String consumerGroup = null;
     private int cousumeThreadMin = 16;
-    private Map<String, JmsMessageListener> listeners;
-    private Map<String, Map<String, JmsMessageListener>> topicListeners;
-    private Map<String, Map<String, Class<JmsObject>>> topicTypes;
+    // 消费者参数 批量拉取字节数
     private int fetchMinBytes = 500;
+    //一次最多拉取记录数
     private int maxPollRecords = 500;
+    // 批量拉取等待时间
     private int pollTimeout = 1000;
     private AtomicBoolean closed = new AtomicBoolean(false);
+    // 接受消息线程
     private ExecutorService pollThread;
+    // 线程执行方法
     private JmsKafkaMessageOrderlyExecuter executer;
 
-    public JmsKafkaMQReceiver() {
-    }
-
+    @Override
     public void start() {
-        if (this.listeners != null && this.listeners.size() != 0) {
-            if (this.clientId == null) {
-                throw new RuntimeException("must need clientId");
-            } else {
-                if (this.consumerGroup == null) {
-                    this.consumerGroup = this.clientId;
-                }
+        if (listeners == null || listeners.size() == 0) {
+            throw new RuntimeException("must need kafka topics");
+        }
+        if (clientId == null) {
+            throw new RuntimeException("must need kafka clientId");
+        }
+        if (consumerGroup == null) {
+            consumerGroup = clientId;
+        }
+        // kafka 初始化参数
+        Properties props = new Properties();
+        props.put("bootstrap.servers", this.kafkaAddrs);
+        props.put("key.deserializer", org.apache.kafka.common.serialization.StringDeserializer.class.getName());
+        props.put("value.deserializer", StringDeserializer.class.getName());
+        props.put("group.id", this.consumerGroup);
+        props.put("enable.auto.commit", "false");
+        props.put("client.id", this.clientId);
+        props.put("fetch.min.bytes", this.fetchMinBytes);
+        props.put("max.poll.records", this.maxPollRecords);
+        props.put("auto.offset.reset", "latest");
+        // kafka 客户端
+        this.consumer = new KafkaConsumer(props);
+        // 初始化接受消息线程池
+        pollThread = Executors.newFixedThreadPool(1);
 
-                Properties props = new Properties();
-                props.put("bootstrap.servers", this.kafkaAddrs);
-                props.put("key.deserializer", StringDeserializer.class.getName());
-                props.put("value.deserializer", StringDeserializer.class.getName());
-                props.put("group.id", this.consumerGroup);
-                props.put("enable.auto.commit", "false");
-                props.put("client.id", this.clientId);
-                props.put("fetch.min.bytes", this.fetchMinBytes);
-                props.put("max.poll.records", this.maxPollRecords);
-                props.put("auto.offset.reset", "latest");
-                this.pollThread = Executors.newFixedThreadPool(1);
-                this.consumer = new KafkaConsumer(props);
-                logger.info("rocketmq start clientId:{} consumerGroup:{} kafkaAddrs:{} fetchMinBytes:{}", new Object[]{this.clientId, this.consumerGroup, this.kafkaAddrs, this.fetchMinBytes});
+        try {
+            topicTypes = new HashMap<>();
+            topicListener = new HashMap<>();
+            for (String s : listeners.keySet()) {
+                String[] split = s.split("@");
+                topicListener.put(split[0], listeners.get(s));
+                topicTypes.put(split[0], (Class<JmsObject>) Class.forName(split[1]));
+            }
+            // 设置监听消息
+            consumer.subscribe(topicListener.keySet());
+            executer = new JmsKafkaMessageOrderlyExecuter(topicListener, topicTypes);
+            // 设置线程池大小
+            executer.setThreadPoolSize(16);
+            // 初始化
+            executer.start();
+            pollThread.submit(() -> {
+                while (!closed.get()) {
+                    ConsumerRecords<String, String> records = this.consumer.poll(Duration.ofMillis((long) this.pollTimeout));
+                    if (records.count() > 0) {
+                        process(records);
 
-                try {
-                    this.topicListeners = new HashMap();
-                    this.topicTypes = new HashMap();
-                    Iterator var2 = this.listeners.keySet().iterator();
-
-                    while(var2.hasNext()) {
-                        String topic = (String)var2.next();
-                        String[] topicExps = topic.split("@");
-                        Map<String, JmsMessageListener> tagsListeners = (Map)this.topicListeners.get(topicExps[0]);
-                        Map<String, Class<JmsObject>> tagsTypes = (Map)this.topicTypes.get(topicExps[0]);
-                        if (tagsListeners == null) {
-                            tagsListeners = new HashMap();
-                            this.topicListeners.put(topicExps[0], tagsListeners);
-                        }
-
-                        if (tagsTypes == null) {
-                            tagsTypes = new HashMap();
-                            this.topicTypes.put(topicExps[0], tagsTypes);
-                        }
-
-                        String[] tags = topicExps[1].split("\\|\\|");
-                        String[] var8 = tags;
-                        int var9 = tags.length;
-
-                        for(int var10 = 0; var10 < var9; ++var10) {
-                            String tag = var8[var10];
-                            ((Map)tagsListeners).put(tag, this.listeners.get(topic));
-                            ((Map)tagsTypes).put(tag, Class.forName(topicExps[2]));
+                        try {
+                            this.consumer.commitAsync();
+                        } catch (Exception var3) {
+                            logger.error("commit failed", var3);
                         }
                     }
 
-                    this.consumer.subscribe(this.topicListeners.keySet());
-                    logger.info("kafakamq subscribe clientId:{} consumerGroup:{} topics:{}", new Object[]{this.clientId, this.consumerGroup, this.topicListeners.keySet()});
-                    this.executer = new JmsKafkaMessageOrderlyExecuter(this.topicListeners, this.topicTypes);
-                    this.executer.setThreadPoolSize(this.cousumeThreadMin);
-                    this.pollThread.submit(() -> {
-                        while(!this.closed.get()) {
-                            ConsumerRecords<String, String> records = this.consumer.poll(Duration.ofMillis((long)this.pollTimeout));
-                            if (records.count() > 0) {
-                                this.process(records);
-
-                                try {
-                                    this.consumer.commitAsync();
-                                } catch (Exception var3) {
-                                    logger.error("commit failed", var3);
-                                }
-                            }
-                        }
-
-                    });
-                    this.executer.start();
-                    logger.info("kafkamq consumer clientId:{} consumerGroup:{} subscription:{} started", this.clientId, this.consumerGroup);
-                } catch (Exception var12) {
-                    var12.printStackTrace();
                 }
 
-            }
-        } else {
-            throw new RuntimeException("must need topics");
+            });
+            logger.info("kafkamq consumer clientId:{} consumerGroup:{} subscription:{} started", this.clientId, this.consumerGroup, topicListener.keySet());
+        } catch (Exception e) {
+
         }
     }
 
     private void process(ConsumerRecords<String, String> records) {
-        Iterator var2 = records.iterator();
-
-        while(var2.hasNext()) {
-            ConsumerRecord<String, String> msg = (ConsumerRecord)var2.next();
-            this.executer.add(msg.partition(), msg);
+        for (ConsumerRecord<String, String> record : records) {
+            executer.add(record.partition(), record);
         }
 
     }
 
+    @Override
     public void shutdown() {
-        if (this.closed.compareAndSet(false, true)) {
+        if (closed.compareAndSet(false, true)) {
             logger.info("kafkamq consumer shutdown");
-            this.pollThread.shutdownNow();
-            this.executer.stop();
-
+            // 关闭接受消息线程
+            pollThread.shutdownNow();
+            // 关闭执行消息线程
+            executer.stop();
             try {
-                this.consumer.commitSync();
+                consumer.commitAsync();
             } finally {
-                this.consumer.close();
+                consumer.close();
             }
-
             logger.info("kafkamq consumer shutdown success");
         }
+
     }
 
+    @Override
     public void stop() {
         this.shutdown();
     }
@@ -168,8 +151,17 @@ public class JmsKafkaMQReceiver implements IThreadsPool, IJmsReceiver {
     public void stopNow(boolean flag) {
         this.shutdown();
     }
+
+    public KafkaConsumer getConsumer() {
+        return consumer;
+    }
+
+    public void setConsumer(KafkaConsumer consumer) {
+        this.consumer = consumer;
+    }
+
     public String getKafkaAddrs() {
-        return this.kafkaAddrs;
+        return kafkaAddrs;
     }
 
     public void setKafkaAddrs(String kafkaAddrs) {
@@ -177,7 +169,7 @@ public class JmsKafkaMQReceiver implements IThreadsPool, IJmsReceiver {
     }
 
     public String getClientId() {
-        return this.clientId;
+        return clientId;
     }
 
     public void setClientId(String clientId) {
@@ -185,38 +177,50 @@ public class JmsKafkaMQReceiver implements IThreadsPool, IJmsReceiver {
     }
 
     public String getConsumerGroup() {
-        return this.consumerGroup;
+        return consumerGroup;
     }
 
     public void setConsumerGroup(String consumerGroup) {
         this.consumerGroup = consumerGroup;
     }
 
+    public int getCousumeThreadMin() {
+        return cousumeThreadMin;
+    }
+
+    public void setCousumeThreadMin(int cousumeThreadMin) {
+        this.cousumeThreadMin = cousumeThreadMin;
+    }
+
     public int getFetchMinBytes() {
-        return this.fetchMinBytes;
+        return fetchMinBytes;
     }
 
     public void setFetchMinBytes(int fetchMinBytes) {
         this.fetchMinBytes = fetchMinBytes;
     }
 
+    public int getMaxPollRecords() {
+        return maxPollRecords;
+    }
+
+    public void setMaxPollRecords(int maxPollRecords) {
+        this.maxPollRecords = maxPollRecords;
+    }
+
     public int getPollTimeout() {
-        return this.pollTimeout;
+        return pollTimeout;
     }
 
     public void setPollTimeout(int pollTimeout) {
         this.pollTimeout = pollTimeout;
     }
 
+    public Map<String, JmsMessageListener> getListeners() {
+        return listeners;
+    }
+
     public void setListeners(Map<String, JmsMessageListener> listeners) {
         this.listeners = listeners;
-    }
-
-    public int getMaxPollRecords() {
-        return this.maxPollRecords;
-    }
-
-    public void setMaxPollRecords(int maxPollRecords) {
-        this.maxPollRecords = maxPollRecords;
     }
 }

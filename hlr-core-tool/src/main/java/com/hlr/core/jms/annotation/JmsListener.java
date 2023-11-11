@@ -1,5 +1,6 @@
 package com.hlr.core.jms.annotation;
 
+import com.hlr.core.config.EnumConfig;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Documented;
@@ -23,5 +24,7 @@ public @interface JmsListener {
     
     String topic() default "";
     Class<?> jmsObject();
+
+    EnumConfig.JmsType jmsType() default EnumConfig.JmsType.JMS_NULL;
     
 }

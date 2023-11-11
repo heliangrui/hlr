@@ -3,9 +3,11 @@ package com.hlr.start;
 import com.hlr.core.cache.CacheService;
 import com.hlr.core.cache.impl.RedisCacheService;
 import com.hlr.core.cache.redis.RedisPool;
+import com.hlr.core.config.EnumConfig;
 import com.hlr.core.jms.JmsMessageListener;
 import com.hlr.core.jms.annotation.JmsListener;
 import com.hlr.core.jms.kafka.JmsKafkaMQReceiver;
+import com.hlr.core.jms.kafka.JmsKafkaMQSender;
 import com.hlr.start.aop.MethodCacheAspect;
 import com.hlr.start.config.HlrConfigProperties;
 import com.hlr.start.config.KafkaConfigProperties;
@@ -100,7 +102,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
                 JmsMessageListener jmsMessageListener = (JmsMessageListener) b;
                 //获取监听消息注解配置
                 JmsListener annotation = jmsMessageListener.getClass().getAnnotation(JmsListener.class);
-                if (annotation != null) {
+                if (annotation != null && (annotation.jmsType() == EnumConfig.JmsType.JMS_KAFKA || annotation.jmsType() == EnumConfig.JmsType.JMS_NULL)) {
                     // 组装注解配置信息
                     StringBuilder sb = new StringBuilder(annotation.topic());
                     sb.append("@").append(annotation.jmsObject().getName());
@@ -111,8 +113,24 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
 
         });
         jmsKafkaMQReceiver.setListeners(listeners);
+        if (listeners.isEmpty()) {
+            return null;
+        }
+        
         return jmsKafkaMQReceiver;
+    }
 
+    @Bean
+    @ConditionalOnProperty({"hlr.kafka.kafkaAddrs"})
+    JmsKafkaMQSender jmsKafkaMQSender(KafkaConfigProperties kafkaConfigProperties) {
+        JmsKafkaMQSender sender = new JmsKafkaMQSender();
+        sender.setClientId(kafkaConfigProperties.getClientId() == null ? this.appName : kafkaConfigProperties.getClientId());
+        sender.setKafkaAddrs(kafkaConfigProperties.getKafkaAddrs());
+        sender.setAcks(kafkaConfigProperties.getAcks());
+        sender.setBatchSize(kafkaConfigProperties.getBatchSize());
+        sender.setLingerMs(kafkaConfigProperties.getLingerMs());
+        sender.setRetries(kafkaConfigProperties.getRetries());
+        return sender;
     }
 
 

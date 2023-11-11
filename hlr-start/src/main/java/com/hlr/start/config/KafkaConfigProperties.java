@@ -1,5 +1,7 @@
 package com.hlr.start.config;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import java.util.Map;
 
 /**
@@ -9,6 +11,7 @@ import java.util.Map;
  *
  * @author hlr
  */
+@ConfigurationProperties(prefix = "hlr.kafka")
 public class KafkaConfigProperties {
 
     private String clientId = null;

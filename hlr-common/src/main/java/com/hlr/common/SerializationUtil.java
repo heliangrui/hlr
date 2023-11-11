@@ -11,8 +11,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * http://www.itstack.org
- * create by fuzhengwei on 2019/5/7
+ * 序列化
  */
 public class SerializationUtil {
 

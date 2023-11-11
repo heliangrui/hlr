@@ -119,10 +119,6 @@
                 <version>${redis.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hlr.common</groupId>
-                <artifactId>hlr-common</artifactId>
-            </dependency>
-            <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
@@ -177,11 +173,6 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>fastjson</artifactId>
                 <version>${fastjson.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.alibaba.nacos</groupId>
-                <artifactId>nacos-client</artifactId>
-                <version>${nacos.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.dubbo</groupId>

@@ -55,27 +55,27 @@ public class JmsKafkaMQSender implements IThreadsPool {
 
     }
 
-    public boolean send(final String topic, final JmsObject object) {
+    public boolean send(final String topic, final JmsObject jsmObject) {
         if (!closed.get() && this.producer != null) {
-            if (topic != null && object != null) {
+            if (topic != null && jsmObject != null) {
                 try {
-                    long key = object.getOrderKey() == 0L ? (long) RandomUtil.getRandomRange(20) : object.getOrderKey();
-                    ProducerRecord<Long, String> producerRecord = new ProducerRecord(topic, key + "", new String(SerializationUtil.serialize(object)));
+                    long key = jsmObject.getOrderKey() == 0L ? (long) RandomUtil.getRandomRange(20) : jsmObject.getOrderKey();
+                    ProducerRecord<Long, String> producerRecord = new ProducerRecord(topic, key + "", new String(SerializationUtil.serialize(jsmObject)));
                     long t1 = System.currentTimeMillis();
                     Future<RecordMetadata> result = this.producer.send(producerRecord, new Callback() {
                         public void onCompletion(RecordMetadata metadata, Exception exception) {
                             if (exception != null) {
-                                JmsKafkaMQSender.logger.error(" send fail. topic:{} orderKey:{} btime:{}", topic, object.getOrderKey(), DateUtil.fmtLongTime((long) object.getBtime()), exception);
+                                JmsKafkaMQSender.logger.error(" send fail. topic:{} orderKey:{} btime:{}", topic, jsmObject.getOrderKey(), DateUtil.fmtLongTime((long) jsmObject.getBtime()), exception);
                                 throw new RuntimeException("kafka生产数据异常...");
                             }
                         }
                     });
                     if (result == null) {
-                        logger.error(" send fail. topic:{} orderKey:{} btime:{}", topic, object.getOrderKey(), DateUtil.fmtLongTime((long) object.getBtime()));
+                        logger.error(" send fail. topic:{} orderKey:{} btime:{}", topic, jsmObject.getOrderKey(), DateUtil.fmtLongTime((long) jsmObject.getBtime()));
                         return false;
                     } else {
                         long t2 = System.currentTimeMillis();
-                        logger.debug("topic:{} orderKey:{} msgLen:{} btime:{} mqbtime:{} time:{}", producerRecord.topic(), producerRecord.key(), ((String) producerRecord.value()).length(), DateUtil.fmtLongTime((long) object.getBtime()), DateUtil.fmtLongTime((long) DateUtil.getNowIntTime()), t2 - t1);
+                        logger.debug("topic:{} orderKey:{} msgLen:{} btime:{} mqbtime:{} time:{}", producerRecord.topic(), producerRecord.key(), ((String) producerRecord.value()).length(), DateUtil.fmtLongTime((long) jsmObject.getBtime()), DateUtil.fmtLongTime((long) DateUtil.getNowIntTime()), t2 - t1);
                         return true;
                     }
                 } catch (Exception var11) {

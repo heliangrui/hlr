@@ -8,5 +8,5 @@ package com.hlr.core.jms;
  * @author hlr
  */
 public interface JmsMessageListener {
-    void handleMessage(JmsObject var1);
+    void handleMessage(JmsObject jmsObject);
 }

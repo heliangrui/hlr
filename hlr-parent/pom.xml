@@ -38,6 +38,7 @@
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
         <protostuff.version>1.0.10</protostuff.version>
         <objenesis.version>2.4</objenesis.version>
+        <mqtt.version>1.2.5</mqtt.version>
     </properties>
     <dependencies>
         <dependency>
@@ -95,6 +96,11 @@
             <groupId>com.dyuproject.protostuff</groupId>
             <artifactId>protostuff-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.paho</groupId>
+            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+        </dependency>
+
     </dependencies>
 
     <dependencyManagement>
@@ -204,6 +210,13 @@
                 <artifactId>objenesis</artifactId>
                 <version>${objenesis.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.eclipse.paho</groupId>
+                <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
+                <version>${mqtt.version}</version>
+            </dependency>
+
+
         </dependencies>
     </dependencyManagement>
 

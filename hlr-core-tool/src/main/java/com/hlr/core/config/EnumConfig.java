@@ -29,10 +29,22 @@ public interface EnumConfig {
 
     }
 
-    enum JmsType{
-        JMS_KAFKA("kafka"),JMS_MQTT("mqtt"),JMS_ROCKETMQ("rocketMq"),JMS_NULL("null");
+    enum JmsObjectType{
+        JMS_KAFKA("kafka");
         private final String type;
-        JmsType(String type){
+        JmsObjectType(String type){
+            this.type = type;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+    }
+    enum JmsSourceType{
+        JMS_MQTT("mqtt");
+        private final String type;
+        JmsSourceType(String type){
             this.type = type;
         }
 

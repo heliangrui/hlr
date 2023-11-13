@@ -2,7 +2,7 @@ package com.hlr.core.jms.kafka;
 
 import com.hlr.core.event.IThreadsPool;
 import com.hlr.core.jms.IJmsReceiver;
-import com.hlr.core.jms.JmsMessageListener;
+import com.hlr.core.jms.JmsObjectMessageListener;
 import com.hlr.core.jms.JmsObject;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
@@ -30,9 +30,9 @@ public class JmsKafkaMQReceiver implements IThreadsPool, IJmsReceiver {
 
     private static final Logger logger = LoggerFactory.getLogger(JmsKafkaMQReceiver.class);
     // 存放注解配置 和 监听消息对象
-    Map<String, JmsMessageListener> listeners = new HashMap();
+    Map<String, JmsObjectMessageListener> listeners = new HashMap();
     Map<String, Class<JmsObject>> topicTypes;
-    Map<String, JmsMessageListener> topicListener;
+    Map<String, JmsObjectMessageListener> topicListener;
     // kafka 客户端
     private KafkaConsumer consumer = null;
     // 地址
@@ -92,7 +92,7 @@ public class JmsKafkaMQReceiver implements IThreadsPool, IJmsReceiver {
             consumer.subscribe(topicListener.keySet());
             executer = new JmsKafkaMessageOrderlyExecuter(topicListener, topicTypes);
             // 设置线程池大小
-            executer.setThreadPoolSize(16);
+            executer.setThreadPoolSize(cousumeThreadMin);
             // 初始化
             executer.start();
             pollThread.submit(() -> {
@@ -216,11 +216,11 @@ public class JmsKafkaMQReceiver implements IThreadsPool, IJmsReceiver {
         this.pollTimeout = pollTimeout;
     }
 
-    public Map<String, JmsMessageListener> getListeners() {
+    public Map<String, JmsObjectMessageListener> getListeners() {
         return listeners;
     }
 
-    public void setListeners(Map<String, JmsMessageListener> listeners) {
+    public void setListeners(Map<String, JmsObjectMessageListener> listeners) {
         this.listeners = listeners;
     }
 }

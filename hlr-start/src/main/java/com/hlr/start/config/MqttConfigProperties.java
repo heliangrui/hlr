@@ -1,14 +1,7 @@
 package com.hlr.start.config;
 
-import com.hlr.core.jms.mqtt.JmsMqttMqCallback;
-import org.eclipse.paho.client.mqttv3.MqttClient;
-import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
-import org.eclipse.paho.client.mqttv3.MqttException;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * MqttConfigProperties
@@ -36,8 +29,10 @@ public class MqttConfigProperties {
     private int timeout = 20;
     // 设置连接超时时间常数
     private int ConnectionTimeout = 2000;
-    
+
     private int qos = 0;
+
+    private int threadSize;
 
     public String getClientId() {
         return clientId;
@@ -65,6 +60,14 @@ public class MqttConfigProperties {
 
     public String getPassWord() {
         return passWord;
+    }
+
+    public int getThreadSize() {
+        return threadSize;
+    }
+
+    public void setThreadSize(int threadSize) {
+        this.threadSize = threadSize;
     }
 
     public void setPassWord(String passWord) {
@@ -119,27 +122,4 @@ public class MqttConfigProperties {
         this.qos = qos;
     }
 
-    public static void main(String[] args) throws MqttException {
-
-        MqttClient mqttClient = null;
-        try {
-            mqttClient = new MqttClient("","");
-        } catch (MqttException e) {
-            throw new RuntimeException(e);
-        }
-        mqttClient.setCallback(new JmsMqttMqCallback());
-        MqttConnectOptions options = new MqttConnectOptions();
-        
-        String topic = "3331111/1231232879/event";
-        String modelTopic = "333+/event";
-
-        modelTopic = modelTopic.replace("+", ".*").replace("#", ".*");
-
-        // 使用正则表达式匹配消息主题是否满足模式  
-        Pattern compile = Pattern.compile(modelTopic);
-        Matcher matcher = compile.matcher(topic);
-        System.out.println(matcher.matches());
-
-    }
-    
 }

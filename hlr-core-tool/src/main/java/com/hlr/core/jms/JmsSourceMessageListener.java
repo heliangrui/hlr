@@ -8,5 +8,5 @@ package com.hlr.core.jms;
  * @author hlr
  */
 public interface JmsSourceMessageListener {
-    void handleMessage(String jmsString);
+    void handleMessage(String topic, String jmsString);
 }

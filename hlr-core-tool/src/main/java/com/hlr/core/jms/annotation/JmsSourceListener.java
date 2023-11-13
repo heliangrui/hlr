@@ -10,9 +10,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * JmsListener
- * Description: 消息注解
- * date: 2023/11/6 15:54
+ * JmsSourceListener
+ * Description:
+ * date: 2023/11/13 13:47
  *
  * @author hlr
  */
@@ -20,11 +20,8 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Component
-public @interface JmsListener {
-    
-    String topic() default "";
-    Class<?> jmsObject();
+public @interface JmsSourceListener {
 
-    EnumConfig.JmsType jmsType() default EnumConfig.JmsType.JMS_NULL;
-    
+    String topic() default "";
+    EnumConfig.JmsSourceType jmsType() default EnumConfig.JmsSourceType.JMS_MQTT;
 }

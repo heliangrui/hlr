@@ -3,7 +3,7 @@ package com.hlr.core.jms.kafka;
 import com.hlr.common.DateUtil;
 import com.hlr.common.SerializationUtil;
 import com.hlr.core.event.AbstractLoopThread;
-import com.hlr.core.jms.JmsMessageListener;
+import com.hlr.core.jms.JmsObjectMessageListener;
 import com.hlr.core.jms.JmsObject;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
@@ -26,11 +26,11 @@ import java.util.concurrent.TimeUnit;
 public class JmsKafkaMessageOrderlyExecuter extends AbstractLoopThread {
     private Logger logger = LoggerFactory.getLogger(JmsKafkaMessageOrderlyExecuter.class);
     private List<LinkedBlockingQueue<ConsumerRecord<String, String>>> queues;
-    private Map<String, JmsMessageListener> topicListeners;
+    private Map<String, JmsObjectMessageListener> topicListeners;
     private Map<String, Class<JmsObject>> topicTypes;
     private int capacity = 1000;
 
-    public JmsKafkaMessageOrderlyExecuter(Map<String, JmsMessageListener> topicListeners, Map<String, Class<JmsObject>> topicTypes) {
+    public JmsKafkaMessageOrderlyExecuter(Map<String, JmsObjectMessageListener> topicListeners, Map<String, Class<JmsObject>> topicTypes) {
         super("JmsKafkaMessageOrderlyExecuter");
         this.topicListeners = topicListeners;
         this.topicTypes = topicTypes;
@@ -52,7 +52,7 @@ public class JmsKafkaMessageOrderlyExecuter extends AbstractLoopThread {
             ConsumerRecord<String, String> msg = queues.get(index).poll(1000L, TimeUnit.MILLISECONDS);
             if (msg != null) {
                 Class<JmsObject> jmsObjectClass = topicTypes.get(msg.topic());
-                JmsMessageListener jmsMessageListener = topicListeners.get(msg.topic());
+                JmsObjectMessageListener jmsMessageListener = topicListeners.get(msg.topic());
                 if (jmsMessageListener != null && jmsObjectClass != null) {
                     JmsObject deserialize = SerializationUtil.deserialize(msg.value().getBytes(), jmsObjectClass);
                     long t1 = System.currentTimeMillis();

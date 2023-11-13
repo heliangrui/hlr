@@ -4,13 +4,18 @@ import com.hlr.core.cache.CacheService;
 import com.hlr.core.cache.impl.RedisCacheService;
 import com.hlr.core.cache.redis.RedisPool;
 import com.hlr.core.config.EnumConfig;
-import com.hlr.core.jms.JmsMessageListener;
-import com.hlr.core.jms.annotation.JmsListener;
+import com.hlr.core.jms.JmsObjectMessageListener;
+import com.hlr.core.jms.JmsSourceMessageListener;
+import com.hlr.core.jms.annotation.JmsObjectListener;
+import com.hlr.core.jms.annotation.JmsSourceListener;
 import com.hlr.core.jms.kafka.JmsKafkaMQReceiver;
 import com.hlr.core.jms.kafka.JmsKafkaMQSender;
+import com.hlr.core.jms.mqtt.JmsMqttMqReceiver;
+import com.hlr.core.jms.mqtt.JmsMqttMqSender;
 import com.hlr.start.aop.MethodCacheAspect;
 import com.hlr.start.config.HlrConfigProperties;
 import com.hlr.start.config.KafkaConfigProperties;
+import com.hlr.start.config.MqttConfigProperties;
 import com.hlr.start.config.RedisPoolConfigProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,7 +85,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
 
     @Bean
     @ConditionalOnProperty({"hlr.kafka.kafkaAddrs"})
-    @ConditionalOnBean({JmsMessageListener.class})
+    @ConditionalOnBean({JmsObjectMessageListener.class})
     JmsKafkaMQReceiver jmsKafkaMQReceiver(KafkaConfigProperties kafkaConfigProperties) {
         JmsKafkaMQReceiver jmsKafkaMQReceiver = new JmsKafkaMQReceiver();
         // 基础信心配置
@@ -92,17 +97,17 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
         jmsKafkaMQReceiver.setConsumerGroup(kafkaConfigProperties.getConsumerGroup());
         jmsKafkaMQReceiver.setCousumeThreadMin(kafkaConfigProperties.getThreadSize());
         // 获取监听消息bean对象
-        Map<String, Object> jmsListeners = applicationContext.getBeansWithAnnotation(JmsListener.class);
+        Map<String, Object> jmsListeners = applicationContext.getBeansWithAnnotation(JmsObjectListener.class);
         // 存放注解配置 和 监听消息对象
-        Map<String, JmsMessageListener> listeners = new HashMap();
+        Map<String, JmsObjectMessageListener> listeners = new HashMap();
         jmsListeners.forEach((a, b) -> {
 
-            if (b instanceof JmsMessageListener) {
+            if (b instanceof JmsObjectMessageListener) {
                 //获取监听消息对象
-                JmsMessageListener jmsMessageListener = (JmsMessageListener) b;
+                JmsObjectMessageListener jmsMessageListener = (JmsObjectMessageListener) b;
                 //获取监听消息注解配置
-                JmsListener annotation = jmsMessageListener.getClass().getAnnotation(JmsListener.class);
-                if (annotation != null && (annotation.jmsType() == EnumConfig.JmsType.JMS_KAFKA || annotation.jmsType() == EnumConfig.JmsType.JMS_NULL)) {
+                JmsObjectListener annotation = jmsMessageListener.getClass().getAnnotation(JmsObjectListener.class);
+                if (annotation != null && annotation.jmsType() == EnumConfig.JmsObjectType.JMS_KAFKA) {
                     // 组装注解配置信息
                     StringBuilder sb = new StringBuilder(annotation.topic());
                     sb.append("@").append(annotation.jmsObject().getName());
@@ -116,7 +121,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
         if (listeners.isEmpty()) {
             return null;
         }
-        
+
         return jmsKafkaMQReceiver;
     }
 
@@ -131,6 +136,51 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
         sender.setLingerMs(kafkaConfigProperties.getLingerMs());
         sender.setRetries(kafkaConfigProperties.getRetries());
         return sender;
+    }
+
+    @Bean
+    @ConditionalOnProperty({"hlr.matt.mqttAddrs"})
+    JmsMqttMqReceiver jmsKafkaMQReceiver(MqttConfigProperties mqttConfigProperties) {
+        JmsMqttMqReceiver jmsMqttMqReceiver = new JmsMqttMqReceiver();
+        // 获取监听消息bean对象
+        Map<String, Object> jmsListeners = applicationContext.getBeansWithAnnotation(JmsSourceListener.class);
+        // 存放注解配置 和 监听消息对象
+        Map<String, JmsSourceMessageListener> listeners = new HashMap();
+        jmsListeners.forEach((a, b) -> {
+
+            if (b instanceof JmsSourceMessageListener) {
+                //获取监听消息对象
+                JmsSourceMessageListener jmsMessageListener = (JmsSourceMessageListener) b;
+                //获取监听消息注解配置
+                JmsSourceListener annotation = jmsMessageListener.getClass().getAnnotation(JmsSourceListener.class);
+                if (annotation != null && annotation.jmsType() == EnumConfig.JmsSourceType.JMS_MQTT) {
+                    listeners.put(annotation.topic(), jmsMessageListener);
+                }
+
+            }
+        });
+        jmsMqttMqReceiver.setApplicationContext(applicationContext);
+        jmsMqttMqReceiver.setThreadSize(mqttConfigProperties.getThreadSize());
+        jmsMqttMqReceiver.setTopicListener(listeners);
+        return jmsMqttMqReceiver;
+    }
+
+    @Bean
+    @ConditionalOnProperty({"hlr.matt.mqttAddrs"})
+    JmsMqttMqSender jmsMqttMqSender(MqttConfigProperties mqttConfigProperties) {
+        JmsMqttMqSender jmsMqttMqSender = new JmsMqttMqSender();
+        jmsMqttMqSender.setClientId(mqttConfigProperties.getClientId() == null ? this.appName : mqttConfigProperties.getClientId());
+        jmsMqttMqSender.setMqttAddrs(mqttConfigProperties.getMqttAddrs());
+        jmsMqttMqSender.setQos(mqttConfigProperties.getQos());
+        jmsMqttMqSender.setPassWord(mqttConfigProperties.getPassWord());
+        jmsMqttMqSender.setCleanSession(mqttConfigProperties.isCleanSession());
+        jmsMqttMqSender.setTimeout(mqttConfigProperties.getTimeout());
+        jmsMqttMqSender.setVersion(mqttConfigProperties.getVersion());
+        jmsMqttMqSender.setConnectionTimeout(mqttConfigProperties.getConnectionTimeout());
+        jmsMqttMqSender.setKeepAliveInterval(mqttConfigProperties.getKeepAliveInterval());
+        jmsMqttMqSender.setUserName(mqttConfigProperties.getUserName());
+        jmsMqttMqSender.setApplicationContext(applicationContext);
+        return jmsMqttMqSender;
     }
 
 

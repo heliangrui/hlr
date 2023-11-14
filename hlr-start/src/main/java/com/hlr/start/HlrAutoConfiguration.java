@@ -40,7 +40,7 @@ import java.util.Map;
  * @author hlr
  */
 @Configuration
-@EnableConfigurationProperties({RedisPoolConfigProperties.class, HlrConfigProperties.class, KafkaConfigProperties.class})
+@EnableConfigurationProperties({RedisPoolConfigProperties.class, HlrConfigProperties.class, KafkaConfigProperties.class, MqttConfigProperties.class})
 public class HlrAutoConfiguration implements ApplicationContextAware {
     private static final Logger logger = LoggerFactory.getLogger(HlrAutoConfiguration.class);
     private static ApplicationContext applicationContext;
@@ -139,7 +139,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
     }
 
     @Bean
-    @ConditionalOnProperty({"hlr.matt.mqttAddrs"})
+    @ConditionalOnProperty({"hlr.mqtt.mqttAddrs"})
     JmsMqttMqReceiver jmsKafkaMQReceiver(MqttConfigProperties mqttConfigProperties) {
         JmsMqttMqReceiver jmsMqttMqReceiver = new JmsMqttMqReceiver();
         // 获取监听消息bean对象
@@ -166,7 +166,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
     }
 
     @Bean
-    @ConditionalOnProperty({"hlr.matt.mqttAddrs"})
+    @ConditionalOnProperty({"hlr.mqtt.mqttAddrs"})
     JmsMqttMqSender jmsMqttMqSender(MqttConfigProperties mqttConfigProperties) {
         JmsMqttMqSender jmsMqttMqSender = new JmsMqttMqSender();
         jmsMqttMqSender.setClientId(mqttConfigProperties.getClientId() == null ? this.appName : mqttConfigProperties.getClientId());

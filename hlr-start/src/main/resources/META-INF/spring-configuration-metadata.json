@@ -148,6 +148,34 @@
       "type": "java.util.Map<java.lang.String,java.lang.String>",
       "description": "消费者参数 topicVar对应的实际topic名称，这样可以将主题名字配置在nacos里，一般用不上",
       "sourceType": "com.hlr.start.config.KafkaConfigProperties"
+    },{
+      "name": "hlr.mqtt",
+      "type": "com.hlr.start.config.MqttConfigProperties",
+      "sourceType": "com.hlr.start.config.MqttConfigProperties"
+    },{
+      "name": "hlr.mqtt.clientId",
+      "type": "java.lang.String",
+      "description": "",
+      "sourceType": "com.hlr.start.config.MqttConfigProperties",
+      "defaultValue": ""
+    },{
+      "name": "hlr.mqtt.mqttAddrs",
+      "type": "java.lang.String",
+      "description": "",
+      "sourceType": "com.hlr.start.config.MqttConfigProperties",
+      "defaultValue": ""
+    },{
+      "name": "hlr.mqtt.userName",
+      "type": "java.lang.String",
+      "description": "",
+      "sourceType": "com.hlr.start.config.MqttConfigProperties",
+      "defaultValue": ""
+    },{
+      "name": "hlr.mqtt.passWord",
+      "type": "java.lang.String",
+      "description": "",
+      "sourceType": "com.hlr.start.config.MqttConfigProperties",
+      "defaultValue": ""
     }
   ]
 }

@@ -36,6 +36,7 @@ public class JmsMqttMqReceiver implements IThreadsPool, IJmsReceiver, MqttCallba
 
     @Override
     public void start() {
+        logger.info("JmsMqttMqReceiver start ...");
         // 解析topic  * #
         Map<String, JmsSourceMessageListener> listener = new HashMap<>();
         for (String topic : topicListener.keySet()) {
@@ -52,16 +53,19 @@ public class JmsMqttMqReceiver implements IThreadsPool, IJmsReceiver, MqttCallba
         closed.compareAndSet(true, false);
         // 消费实例启动
         executer.start();
+        logger.info("JmsMqttMqReceiver start ok.");
 
     }
 
     @Override
     public void shutdown() {
+        logger.info("JmsMqttMqReceiver stop start ...");
         // close  设为 true 关闭状态
         if (closed.compareAndSet(false, true)) {
             if (executer != null) {
                 // 关闭线程
                 executer.stop();
+                logger.info("JmsMqttMqReceiver stop ok.");
             }
         }
 

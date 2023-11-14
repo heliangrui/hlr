@@ -140,7 +140,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
 
     @Bean
     @ConditionalOnProperty({"hlr.mqtt.mqttAddrs"})
-    JmsMqttMqReceiver jmsKafkaMQReceiver(MqttConfigProperties mqttConfigProperties) {
+    JmsMqttMqReceiver jmsMqttMQReceiver(MqttConfigProperties mqttConfigProperties) {
         JmsMqttMqReceiver jmsMqttMqReceiver = new JmsMqttMqReceiver();
         // 获取监听消息bean对象
         Map<String, Object> jmsListeners = applicationContext.getBeansWithAnnotation(JmsSourceListener.class);

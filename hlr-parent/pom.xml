@@ -38,7 +38,7 @@
         <spring-cloud-alibaba.version>2021.1</spring-cloud-alibaba.version>
         <protostuff.version>1.0.10</protostuff.version>
         <objenesis.version>2.4</objenesis.version>
-        <mqtt.version>1.2.5</mqtt.version>
+        <mqtt.version>1.2.2</mqtt.version>
     </properties>
     <dependencies>
         <dependency>

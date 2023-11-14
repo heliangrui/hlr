@@ -48,38 +48,39 @@ public class JmsMqttMessageOrderlyExecuter extends AbstractLoopThread {
 
         try {
             JmsMqttMessage poll = queue.poll(1000L, TimeUnit.MILLISECONDS);
-            JmsSourceMessageListener jmsSourceMessageListener = topicVerify(poll.getTopic());
-            if(jmsSourceMessageListener == null){
-                logger.error("topic verify error .. message：{},{}",poll.getTopic(), JSONObject.toJSONString(poll.getMqttMessage()));
-                return;
+            if (poll != null) {
+                JmsSourceMessageListener jmsSourceMessageListener = topicVerify(poll.getTopic());
+                if (jmsSourceMessageListener == null) {
+                    logger.error("topic verify error .. message：{},{}", poll.getTopic(), JSONObject.toJSONString(poll.getMqttMessage()));
+                    return;
+                }
+                jmsSourceMessageListener.handleMessage(poll.getTopic(), new String(poll.getMqttMessage().getPayload()));
+                logger.debug("jms mqtt execute success :{}", JSONObject.toJSONString(poll));
             }
-            jmsSourceMessageListener.handleMessage(poll.getTopic(),new String(poll.getMqttMessage().getPayload()));
-            logger.debug("jms mqtt execute success :{}",JSONObject.toJSONString(poll));
         } catch (InterruptedException e) {
-            logger.error("jms mqtt queue error {}",var1);
+            logger.error("jms mqtt queue error {}", var1);
         }
     }
-    
-    public JmsSourceMessageListener topicVerify(String topic){
+
+    public JmsSourceMessageListener topicVerify(String topic) {
         Pattern compile = null;
         Matcher matcher = null;
         for (String s : topicListener.keySet()) {
             // 使用正则表达式匹配消息主题是否满足模式  
             compile = Pattern.compile(s);
             matcher = compile.matcher(topic);
-            if(matcher.matches()){
+            if (matcher.matches()) {
                 return topicListener.get(s);
             }
         }
         return null;
     }
-    
-    
+
 
     @Override
     public void destory() {
         logger.info("destory mqtt executer jms ...");
-        while(queue.size() != 0){
+        while (queue.size() != 0) {
             try {
                 Thread.sleep(1000L);
             } catch (InterruptedException e) {

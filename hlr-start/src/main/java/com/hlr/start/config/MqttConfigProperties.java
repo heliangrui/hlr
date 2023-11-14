@@ -28,11 +28,11 @@ public class MqttConfigProperties {
     // 设置连接超时时间
     private int timeout = 20;
     // 设置连接超时时间常数
-    private int ConnectionTimeout = 2000;
+    private int ConnectionTimeout = 10;
 
     private int qos = 0;
 
-    private int threadSize;
+    private int threadSize = 5;
 
     public String getClientId() {
         return clientId;

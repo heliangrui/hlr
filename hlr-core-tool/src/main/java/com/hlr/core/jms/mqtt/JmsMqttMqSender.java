@@ -4,10 +4,13 @@ import com.hlr.core.event.IThreadsPool;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -18,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author hlr
  */
 public class JmsMqttMqSender implements IThreadsPool {
+    private static final Logger logger = LoggerFactory.getLogger(JmsMqttMqSender.class);
 
     private String clientId;
     // 客户端地址
@@ -34,26 +38,23 @@ public class JmsMqttMqSender implements IThreadsPool {
     private int timeout = 20;
     // 设置连接超时时间常数
     private int ConnectionTimeout = 2000;
-
     private int qos = 0;
-    
     private MqttClient mqttClient;
-
     private ApplicationContext applicationContext;
-    
-    private JmsMqttMqReceiver jmsMqttMqReceiver;
     private AtomicBoolean closed = new AtomicBoolean(true);
-    
+    private MqttMessage mqttMessage = null;
+
     @Override
     public void start() {
         try {
-            mqttClient = new MqttClient(mqttAddrs,clientId,new MemoryPersistence());
+            logger.info("JmsMqttMqSender connect start ...");
+            mqttClient = new MqttClient(mqttAddrs, clientId, new MemoryPersistence());
             MqttConnectOptions options = new MqttConnectOptions();
-            
-            if(getUserName() != null){
+
+            if (getUserName() != null) {
                 options.setUserName(getUserName());
             }
-            if(getPassWord()!=null){
+            if (getPassWord() != null) {
                 options.setPassword(getPassWord().toCharArray());
             }
             options.setCleanSession(isCleanSession());
@@ -61,30 +62,45 @@ public class JmsMqttMqSender implements IThreadsPool {
             options.setKeepAliveInterval(getKeepAliveInterval());
             JmsMqttMqReceiver bean = applicationContext.getBean(JmsMqttMqReceiver.class);
             mqttClient.setCallback(bean);
-            mqttClient.subscribe((String[]) bean.getTopicListener().keySet().toArray());
-            closed.compareAndSet(true,false);
             mqttClient.connect(options);
-            
+            mqttClient.subscribe(bean.getTopicListener().keySet().toArray(new String[0]));
+            closed.compareAndSet(true, false);
+            logger.info("JmsMqttMqSender connect ok");
         } catch (MqttException e) {
-            throw new RuntimeException("mqtt connect error ...");
+            throw new RuntimeException("JmsMqttMqSender connect error ...");
         }
+    }
 
-
+    public boolean send(String topic, String message) {
+        if (!closed.get()) {
+            mqttMessage = new MqttMessage();
+            mqttMessage.setQos(qos);
+            mqttMessage.setPayload(message.getBytes(StandardCharsets.UTF_8));
+            mqttMessage.setRetained(true);
+            try {
+                mqttClient.publish(topic, mqttMessage);
+                return true;
+            } catch (MqttException e) {
+                logger.error("JmsMqttMqSender send error:{},{}", topic, message, e);
+            }
+        }
+        return false;
     }
 
     @Override
     public void stop() {
-
-        if(closed.compareAndSet(false,true)){
-            if (mqttClient != null){
+        logger.info("JmsMqttMqSender stop ...");
+        if (closed.compareAndSet(false, true)) {
+            if (mqttClient != null) {
                 try {
                     mqttClient.disconnect();
+                    logger.info("JmsMqttMqSender stop ok.");
                 } catch (MqttException e) {
-                    throw new RuntimeException("mqtt disconnect error ... ",e);
+                    throw new RuntimeException("JmsMqttMqSender disconnect error ... ", e);
                 }
             }
         }
-        
+
     }
 
     @Override

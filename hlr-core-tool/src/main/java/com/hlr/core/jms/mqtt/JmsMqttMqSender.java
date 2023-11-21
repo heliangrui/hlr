@@ -42,14 +42,16 @@ public class JmsMqttMqSender implements IThreadsPool {
     private MqttClient mqttClient;
     private ApplicationContext applicationContext;
     private AtomicBoolean closed = new AtomicBoolean(true);
-    private MqttMessage mqttMessage = null;
+    MqttMessage mqttMessage = null;
+    private JmsMqttMqReceiver jmsMqttMqReceiver = null;
+    private MqttConnectOptions options = null;
 
     @Override
     public void start() {
         try {
             logger.info("JmsMqttMqSender connect start ...");
             mqttClient = new MqttClient(mqttAddrs, clientId, new MemoryPersistence());
-            MqttConnectOptions options = new MqttConnectOptions();
+            options = new MqttConnectOptions();
 
             if (getUserName() != null) {
                 options.setUserName(getUserName());
@@ -57,17 +59,51 @@ public class JmsMqttMqSender implements IThreadsPool {
             if (getPassWord() != null) {
                 options.setPassword(getPassWord().toCharArray());
             }
+            // 设置自动重连  
+            options.setAutomaticReconnect(true);
             options.setCleanSession(isCleanSession());
             options.setConnectionTimeout(getConnectionTimeout());
-            options.setKeepAliveInterval(getKeepAliveInterval());
-            JmsMqttMqReceiver bean = applicationContext.getBean(JmsMqttMqReceiver.class);
-            mqttClient.setCallback(bean);
-            mqttClient.connect(options);
-            mqttClient.subscribe(bean.getTopicListener().keySet().toArray(new String[0]));
-            closed.compareAndSet(true, false);
-            logger.info("JmsMqttMqSender connect ok");
+//            options.setKeepAliveInterval(getKeepAliveInterval());
+            // 回调类获取
+            jmsMqttMqReceiver = applicationContext.getBean(JmsMqttMqReceiver.class);
+            // 连接
+            reConnection();
         } catch (MqttException e) {
             throw new RuntimeException("JmsMqttMqSender connect error ...");
+        }
+    }
+
+    /**
+     *
+     */
+    protected void reConnection() {
+        closed.set(true);
+        while (!connection()) {
+            logger.info("JmsMqttMqSender connect wait ...");
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private boolean connection() {
+        try {
+            mqttClient.setCallback(jmsMqttMqReceiver);
+            mqttClient.connect(options);
+            mqttClient.subscribe(jmsMqttMqReceiver.getTopicListener().keySet().toArray(new String[0]));
+            logger.info("JmsMqttMqSender connect ok");
+            closed.compareAndSet(true, false);
+            return true;
+        } catch (Exception e) {
+            boolean connected = mqttClient.isConnected();
+            if (connected) {
+                closed.compareAndSet(true, false);
+            } else {
+                closed.set(true);
+            }
+            return connected;
         }
     }
 
@@ -75,8 +111,8 @@ public class JmsMqttMqSender implements IThreadsPool {
         if (!closed.get()) {
             mqttMessage = new MqttMessage();
             mqttMessage.setQos(qos);
-            mqttMessage.setPayload(message.getBytes(StandardCharsets.UTF_8));
-            mqttMessage.setRetained(true);
+            mqttMessage.setPayload(message.getBytes());
+            mqttMessage.setRetained(false);
             try {
                 mqttClient.publish(topic, mqttMessage);
                 return true;
@@ -96,7 +132,7 @@ public class JmsMqttMqSender implements IThreadsPool {
                     mqttClient.disconnect();
                     logger.info("JmsMqttMqSender stop ok.");
                 } catch (MqttException e) {
-                    throw new RuntimeException("JmsMqttMqSender disconnect error ... ", e);
+                    logger.error("JmsMqttMqSender disconnect error ... ", e);
                 }
             }
         }

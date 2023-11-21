@@ -23,7 +23,7 @@
         <common.version>1.0-SNAPSHOT</common.version>
         <fastjson.version>1.2.83</fastjson.version>
         <nacos.version>2.0.4</nacos.version>
-        <dubbo.version>3.2.5</dubbo.version>
+        <dubbo.version>3.2.9</dubbo.version>
         <hlr-common.version>1.0.1-HLR</hlr-common.version>
         <hlr-core.version>1.0.1-HLR</hlr-core.version>
         <hlr-start.version>1.0.1-HLR</hlr-start.version>

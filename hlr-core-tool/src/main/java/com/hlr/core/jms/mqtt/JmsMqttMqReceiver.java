@@ -44,8 +44,6 @@ public class JmsMqttMqReceiver implements IThreadsPool, IJmsReceiver, MqttCallba
             topic = topic.replace("+", ".*").replace("#", ".*");
             listener.put(topic, jmsSourceMessageListener);
         }
-        // 清空原始topic
-        topicListener = null;
         // 初始化 消息消费实例
         executer = new JmsMqttMessageOrderlyExecuter(listener);
         executer.setThreadPoolSize(threadSize);
@@ -59,7 +57,7 @@ public class JmsMqttMqReceiver implements IThreadsPool, IJmsReceiver, MqttCallba
 
     @Override
     public void shutdown() {
-        logger.info("JmsMqttMqReceiver stop start ...");
+        logger.info("JmsMqttMqReceiver stop ...");
         // close  设为 true 关闭状态
         if (closed.compareAndSet(false, true)) {
             if (executer != null) {
@@ -86,8 +84,7 @@ public class JmsMqttMqReceiver implements IThreadsPool, IJmsReceiver, MqttCallba
         // 失败重连
         logger.info("mqtt connection error restart...");
         JmsMqttMqSender bean = applicationContext.getBean(JmsMqttMqSender.class);
-        bean.stop();
-        bean.start();
+        bean.reConnection();
 
     }
 

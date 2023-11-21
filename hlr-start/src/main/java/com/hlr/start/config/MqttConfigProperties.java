@@ -22,7 +22,7 @@ public class MqttConfigProperties {
     // 保持活动间隔时间
     private int KeepAliveInterval = 20;
     // 设置清除会话标志
-    private boolean cleanSession = false;
+    private boolean cleanSession = true;
     //设置MQTT协议版本
     private int version = 0;
     // 设置连接超时时间
@@ -30,7 +30,7 @@ public class MqttConfigProperties {
     // 设置连接超时时间常数
     private int ConnectionTimeout = 10;
 
-    private int qos = 0;
+    private int qos = 1;
 
     private int threadSize = 5;
 

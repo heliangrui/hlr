@@ -1,6 +1,5 @@
 package com.hlr.core.jms.mqtt;
 
-import com.alibaba.fastjson.JSONObject;
 import com.hlr.core.event.IThreadsPool;
 import com.hlr.core.jms.IJmsReceiver;
 import com.hlr.core.jms.JmsSourceMessageListener;
@@ -99,7 +98,7 @@ public class JmsMqttMqReceiver implements IThreadsPool, IJmsReceiver, MqttCallba
     @Override
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
         // 消息发送成功
-        logger.debug("Jms mqtt send message success:{}", JSONObject.toJSONString(iMqttDeliveryToken));
+        logger.debug("Jms mqtt send message success:{}", (Object[]) iMqttDeliveryToken.getTopics());
     }
 
     public int getThreadSize() {

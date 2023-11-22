@@ -63,7 +63,7 @@ public class JmsMqttMqSender implements IThreadsPool {
             options.setAutomaticReconnect(true);
             options.setCleanSession(isCleanSession());
             options.setConnectionTimeout(getConnectionTimeout());
-//            options.setKeepAliveInterval(getKeepAliveInterval());
+            options.setKeepAliveInterval(getKeepAliveInterval());
             // 回调类获取
             jmsMqttMqReceiver = applicationContext.getBean(JmsMqttMqReceiver.class);
             // 连接

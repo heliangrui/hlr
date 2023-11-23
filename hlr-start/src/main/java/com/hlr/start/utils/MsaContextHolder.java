@@ -1,5 +1,6 @@
 package com.hlr.start.utils;
 
+import feign.RequestTemplate;
 import org.apache.dubbo.rpc.RpcContext;
 import org.slf4j.MDC;
 import org.springframework.core.NamedThreadLocal;
@@ -66,6 +67,13 @@ public class MsaContextHolder {
         initTraceIdAndMdc(request);
         RpcContext.getClientAttachment().setAttachment("traceId", TraceUtil.getTraceId(request));
         RpcContext.getClientAttachment().setAttachment("tag", TraceUtil.getTag(request));
+    }
+
+    public static void setFeignAttachemnt(RequestTemplate requestTemplate, HttpServletRequest request, String appName) {
+        initTraceIdAndMdc(request);
+        requestTemplate.header("traceId",TraceUtil.getTraceId(request));
+        requestTemplate.header("tag", TraceUtil.getTag(request));
+        requestTemplate.header("target.app", appName);
     }
 
 }

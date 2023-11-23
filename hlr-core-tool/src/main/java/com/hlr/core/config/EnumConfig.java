@@ -11,6 +11,7 @@ public interface EnumConfig {
 
     public static enum R_CODE {
         OK(0),
+        CLOUD_FAIL(2),
         FAIL(1);
         private int code;
 

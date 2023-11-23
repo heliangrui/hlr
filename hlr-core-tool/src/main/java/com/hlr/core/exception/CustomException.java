@@ -1,4 +1,4 @@
-package com.hlr.common.exception;
+package com.hlr.core.exception;
 
 /**
  * CustomException
@@ -8,7 +8,6 @@ package com.hlr.common.exception;
  * @author hlr
  */
 public class CustomException extends Exception {
-
     public CustomException(String message) {
         super(message);
     }

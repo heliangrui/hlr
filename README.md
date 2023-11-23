@@ -9,7 +9,9 @@
 4. nacos  完成
 5. dubbo  完成
 6. feign
-7. 接入kafka
+   接口访问异常 报错
+
+7. 接入kafka     完成
 8. 全局异常拦截   完成
 9. 数据源配置增加
 10. swagger 

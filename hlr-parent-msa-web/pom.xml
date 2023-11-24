@@ -10,7 +10,7 @@
         <version>1.0.1-HLR</version>
     </parent>
     <groupId>com.hlr.parent.web.msa</groupId>
-    <artifactId>hlr-parent-msa-web</artifactId>
+    <artifactId>hlr-parent-web-msa</artifactId>
     <version>1.0.1-HLR</version>
     <packaging>pom</packaging>
 

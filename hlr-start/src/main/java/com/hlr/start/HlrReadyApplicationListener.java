@@ -1,6 +1,7 @@
 package com.hlr.start;
 
 import com.hlr.core.event.ThreadsPoolFactory;
+import com.hlr.db.DBConnectionPools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ public class HlrReadyApplicationListener implements ApplicationListener<Applicat
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         if (!ready.get()) {
+            DBConnectionPools.getInstance();
             logger.info("start threadspool factory...");
             if (threadsPoolFactory != null) {
                 threadsPoolFactory.start();

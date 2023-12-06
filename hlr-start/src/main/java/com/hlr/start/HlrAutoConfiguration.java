@@ -75,6 +75,10 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
     HlrReadyApplicationListener hlrReadyApplicationListener() {
         return new HlrReadyApplicationListener();
     }
+    @Bean
+    HlrPreStopApplicationListener hlrPreStopApplicationListener() {
+        return new HlrPreStopApplicationListener();
+    }
 
     @Bean
     @ConditionalOnBean({CacheService.class})

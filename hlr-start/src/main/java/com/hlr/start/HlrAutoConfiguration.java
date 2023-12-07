@@ -52,6 +52,12 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
         HlrAutoConfiguration.applicationContext = applicationContext;
     }
 
+    @Bean
+    HlrPreStartApplicationListener hlrPreStartApplicationListener() {
+        return new HlrPreStartApplicationListener();
+    }
+    
+
     @Bean(initMethod = "init", destroyMethod = "shutDown")
     @ConditionalOnProperty({"hlr.redis.server"})
     RedisPool redisPool(RedisPoolConfigProperties redisPoolConfigProperties) {
@@ -75,6 +81,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
     HlrReadyApplicationListener hlrReadyApplicationListener() {
         return new HlrReadyApplicationListener();
     }
+
     @Bean
     HlrPreStopApplicationListener hlrPreStopApplicationListener() {
         return new HlrPreStopApplicationListener();

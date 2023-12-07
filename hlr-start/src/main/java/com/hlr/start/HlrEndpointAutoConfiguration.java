@@ -4,6 +4,7 @@ import com.alibaba.cloud.nacos.ConditionalOnNacosDiscoveryEnabled;
 import com.alibaba.cloud.nacos.registry.NacosServiceRegistry;
 import com.hlr.start.endpoint.DubboGraceShutdownEndpoint;
 import com.hlr.start.endpoint.GraceShutdownEndpoint;
+import com.hlr.start.endpoint.ReadyCheckEndPoint;
 import com.hlr.start.endpoint.SpringCloudGraceShutdownEndpoint;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
@@ -45,6 +46,12 @@ public class HlrEndpointAutoConfiguration {
     @ConditionalOnMissingBean({DubboGraceShutdownEndpoint.class, SpringCloudGraceShutdownEndpoint.class})
     public GraceShutdownEndpoint normalGraceShutdownPoint(HlrPreStopApplicationListener hlrPreStopApplicationListener) {
         return new GraceShutdownEndpoint(hlrPreStopApplicationListener);
+    }
+
+    @Bean
+    @ConditionalOnAvailableEndpoint
+    public ReadyCheckEndPoint readyCheckEndPoint(HlrPreStartApplicationListener hlrPreStartApplicationListener) {
+        return new ReadyCheckEndPoint(hlrPreStartApplicationListener);
     }
 
 }

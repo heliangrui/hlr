@@ -8,7 +8,6 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.5.6</version>
-        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>hlr.parent</groupId>
@@ -183,7 +182,7 @@
                 <version>${hlr-core.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.hlr.common</groupId>
+                <groupId>hlr.common</groupId>
                 <artifactId>hlr-common</artifactId>
                 <version>${hlr-common.version}</version>
             </dependency>

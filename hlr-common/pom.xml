@@ -9,7 +9,7 @@
         <artifactId>hlr-parent</artifactId>
         <version>1.0.1-HLR</version>
     </parent>
-    <groupId>com.hlr.common</groupId>
+    <groupId>hlr.common</groupId>
     <artifactId>hlr-common</artifactId>
     <version>1.0.1-HLR</version>
     

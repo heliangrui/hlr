@@ -20,7 +20,7 @@
     <dependencies>
         
         <dependency>
-            <groupId>com.hlr.common</groupId>
+            <groupId>hlr.common</groupId>
             <artifactId>hlr-common</artifactId>
         </dependency>
         <dependency>

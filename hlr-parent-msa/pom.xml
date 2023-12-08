@@ -9,7 +9,7 @@
         <artifactId>hlr-parent</artifactId>
         <version>1.0.1-HLR</version>
     </parent>
-    <groupId>com.hlr.parent.msa</groupId>
+    <groupId>hlr.parent.msa</groupId>
     <artifactId>hlr-parent-msa</artifactId>
     <version>1.0.1-HLR</version>
     <packaging>pom</packaging>

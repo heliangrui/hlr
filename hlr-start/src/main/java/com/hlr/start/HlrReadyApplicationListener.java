@@ -39,6 +39,7 @@ public class HlrReadyApplicationListener implements ApplicationListener<Applicat
                 logger.info("threr is no threadspool factory be configured");
             }
             ready.compareAndSet(false, true);
+            logger.info("start threadspool success");
         }
 
     }

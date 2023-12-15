@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -22,14 +23,13 @@ public class TaskExecuter extends AbstractLoopThread implements ITaskExecuter {
     private int maxRetryTime = 3;
     // 任务队列
     private LinkedBlockingQueue<TaskItem> queue;
-
     // 队列大小
     private int maxSize = 0;
     // 队列满时是否溢出
     private boolean discardOnFull = false;
     // 队列已满未处理个数
     private AtomicInteger discardCounter = new AtomicInteger();
-
+    private AtomicBoolean close = new AtomicBoolean(true);
     // 计数器
     private AtomicInteger counter = new AtomicInteger();
 
@@ -54,13 +54,15 @@ public class TaskExecuter extends AbstractLoopThread implements ITaskExecuter {
 
     @Override
     public void start() {
-        if (this.maxSize == 0) {
-            this.maxSize = Integer.MAX_VALUE;
+        if (close.compareAndSet(true, false)) {
+            if (this.maxSize == 0) {
+                this.maxSize = Integer.MAX_VALUE;
+            }
+            this.queue = new LinkedBlockingQueue<>(this.maxSize);
+            this.logger.debug("start task executer capacity:{}", this.maxSize);
+            super.start();
         }
 
-        this.queue = new LinkedBlockingQueue<>(this.maxSize);
-        this.logger.debug("start task executer capacity:{}", this.maxSize);
-        super.start();
     }
 
     @Override
@@ -98,44 +100,54 @@ public class TaskExecuter extends AbstractLoopThread implements ITaskExecuter {
 
     @Override
     public void destory() {
-        this.logger.info("destory task executer...");
+        if (close.compareAndSet(false, true)) {
+            this.logger.info("destory task executer...");
 
-        while (this.queue.size() > 0) {
-            this.logger.info("have {} task left, just wait for it to complete", this.queue.size());
+            while (this.queue.size() > 0) {
+                this.logger.info("have {} task left, just wait for it to complete", this.queue.size());
 
-            try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException var2) {
+                try {
+                    Thread.sleep(1000L);
+                } catch (InterruptedException var2) {
+                }
             }
-        }
 
-        this.logger.info("destory task executer ok");
+            this.logger.info("destory task executer ok");
+        }
     }
 
     @Override
     public void add(IAsyncExecer exec, Object... obj) {
-        try {
-            if (this.queue.size() >= this.maxSize && this.discardOnFull) {
-                this.logger.warn("task executer {} discarding on capacity:{}", exec.getExecName(), this.maxSize);
-                this.discardCounter.incrementAndGet();
-            } else {
-                this.queue.put(new TaskItem(exec, obj));
+        if (!close.get()) {
+            try {
+                if (this.queue.size() >= this.maxSize && this.discardOnFull) {
+                    this.logger.warn("task executer {} discarding on capacity:{}", exec.getExecName(), this.maxSize);
+                    this.discardCounter.incrementAndGet();
+                } else {
+                    this.queue.put(new TaskItem(exec, obj));
+                }
+            } catch (InterruptedException exception) {
+                exception.printStackTrace();
             }
-        } catch (InterruptedException exception) {
-            exception.printStackTrace();
+        } else {
+            logger.info("taskExecuter add error,because already closed!");
         }
     }
 
     @Override
     public void add(IAsyncExecerUnWaitOnFull exec, Object... obj) {
-        try {
-            if (!this.queue.offer(new TaskItem(exec, obj))) {
-                this.logger.warn("task executer {} full on capacity:{}", exec.getExecName(), this.maxSize);
-                this.discardCounter.incrementAndGet();
-                exec.onFull(obj);
+        if (!close.get()) {
+            try {
+                if (!this.queue.offer(new TaskItem(exec, obj))) {
+                    this.logger.warn("task executer {} full on capacity:{}", exec.getExecName(), this.maxSize);
+                    this.discardCounter.incrementAndGet();
+                    exec.onFull(obj);
+                }
+            } catch (Exception var4) {
+                var4.printStackTrace();
             }
-        } catch (Exception var4) {
-            var4.printStackTrace();
+        } else {
+            logger.info("taskExecuter add error,because already closed!");
         }
 
     }

@@ -19,16 +19,16 @@ public class HlrPreStartApplicationListener implements ApplicationListener<Appli
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-        if (processed.get()) {
+        if (!processed.get()) {
             initMsaTag();
             processed.compareAndSet(false, true);
         }
     }
 
     void initMsaTag() {
-        if (System.getProperty("fhd.msa.tag") != null) {
-            System.setProperty("dubbo.provider.tag", System.getProperty("fhd.msa.tag"));
-            System.setProperty("spring.cloud.nacos.discovery.metadata.tag", System.getProperty("fhd.msa.tag"));
+        if (System.getProperty("hlr.msa.tag") != null) {
+            System.setProperty("dubbo.provider.tag", System.getProperty("hlr.msa.tag"));
+            System.setProperty("spring.cloud.nacos.discovery.metadata.tag", System.getProperty("hlr.msa.tag"));
         }
 
     }

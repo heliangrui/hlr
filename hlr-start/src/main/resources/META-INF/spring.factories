@@ -3,3 +3,5 @@ org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
   com.hlr.start.WebAutoConfiguration,\
   com.hlr.start.HlrEndpointAutoConfiguration,\
   com.hlr.start.WebMvcConfiguration
+org.springframework.context.ApplicationListener=\
+  com.hlr.start.HlrPreStartApplicationListener

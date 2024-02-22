@@ -100,7 +100,7 @@ public abstract class AbstractLoopThread implements IThreadsPool {
     public void doWork(final ExecutorService exec, final int order) {
         exec.submit(new Runnable() {
             public void run() {
-                AbstractLoopThread.this.work(exec, order);
+                work(exec, order);
             }
         });
     }

@@ -54,6 +54,10 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-loadbalancer</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
             <exclusions>
@@ -239,7 +243,6 @@
 
         </dependencies>
     </dependencyManagement>
-
     <modules>
         <module>../hlr-common</module>
         <module>../hlr-parent-msa</module>

@@ -21,10 +21,14 @@ public class HlrPreStartApplicationListener implements ApplicationListener<Appli
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
         if (!processed.get()) {
             initMsaTag();
+            initNacos();
             processed.compareAndSet(false, true);
         }
     }
 
+    /**
+     * 对dubbo 与服务注册进行标记
+     */
     void initMsaTag() {
         if (System.getProperty("hlr.msa.tag") != null) {
             System.setProperty("dubbo.provider.tag", System.getProperty("hlr.msa.tag"));
@@ -35,5 +39,12 @@ public class HlrPreStartApplicationListener implements ApplicationListener<Appli
 
     public boolean isReady() {
         return processed.get();
+    }
+
+    /**
+     * 禁止自动注册导致手动更新失效问题
+     */
+    void initNacos() {
+        System.setProperty("spring.cloud.nacos.discovery.register-enabled", "false");
     }
 }

@@ -23,6 +23,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -53,10 +54,16 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
     }
 
     @Bean
+    @ConditionalOnWebApplication
+    @ConditionalOnProperty(value = {"spring.cloud.nacos.discovery.enabled"},havingValue = "true",matchIfMissing = false)
+    public HlrAutoRegisterApplicationLister hlrAutoRegisterApplicationLister(HlrConfigProperties hlrConfigProperties){
+        return new HlrAutoRegisterApplicationLister(hlrConfigProperties);
+    }
+    
+    @Bean
     HlrPreStartApplicationListener hlrPreStartApplicationListener() {
         return new HlrPreStartApplicationListener();
     }
-    
 
     @Bean(initMethod = "init", destroyMethod = "shutDown")
     @ConditionalOnProperty({"hlr.redis.server"})
@@ -81,7 +88,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
     HlrReadyApplicationListener hlrReadyApplicationListener() {
         return new HlrReadyApplicationListener();
     }
-
+    
     @Bean
     HlrPreStopApplicationListener hlrPreStopApplicationListener() {
         return new HlrPreStopApplicationListener();
@@ -89,7 +96,7 @@ public class HlrAutoConfiguration implements ApplicationContextAware {
 
     @Bean
     @ConditionalOnBean({CacheService.class})
-    @ConditionalOnProperty(value = {"hlr.method.cache.enabled"}, havingValue = "false", matchIfMissing = true)
+    @ConditionalOnProperty(value = {"hlr.method.cache.enabled"}, havingValue = "true", matchIfMissing = false)
     MethodCacheAspect methodCacheAspect(CacheService cacheService) {
         return new MethodCacheAspect(cacheService);
     }

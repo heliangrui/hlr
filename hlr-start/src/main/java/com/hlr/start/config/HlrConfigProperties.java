@@ -12,7 +12,16 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "hlr")
 public class HlrConfigProperties {
 
+    private boolean springCloudAutoRegister = true;
     private boolean responseAutoBoxing = true;
+
+    public boolean isSpringCloudAutoRegister() {
+        return springCloudAutoRegister;
+    }
+
+    public void setSpringCloudAutoRegister(boolean springCloudAutoRegister) {
+        this.springCloudAutoRegister = springCloudAutoRegister;
+    }
 
     public boolean isResponseAutoBoxing() {
         return responseAutoBoxing;
